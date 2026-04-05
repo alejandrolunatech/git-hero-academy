@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Git Hero Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--border:#30363d;--card:#1c2433;
+  --text:#e6edf3;--muted:#8b949e;
+  --blue:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#e3b341;--purple:#a371f7;
+  --acc1:#58a6ff;--acc2:#3fb950;--acc3:#e3b341;
+}
+.theme-space{--bg:#0d1117;--bg2:#161b22;--border:#30363d;--card:#1c2433;--acc1:#58a6ff;--acc2:#3fb950;--acc3:#e3b341;}
+.theme-jungle{--bg:#0a1f0d;--bg2:#122916;--border:#1e4d24;--card:#163320;--acc1:#4ade80;--acc2:#86efac;--acc3:#fbbf24;}
+.theme-ocean{--bg:#030d1a;--bg2:#071828;--border:#0e3a5c;--card:#0c2540;--acc1:#38bdf8;--acc2:#7dd3fc;--acc3:#f59e0b;}
+.theme-candy{--bg:#1a0a2e;--bg2:#2d1057;--border:#6d28d9;--card:#3b1278;--acc1:#f472b6;--acc2:#c084fc;--acc3:#fb923c;}
+.theme-fire{--bg:#1a0700;--bg2:#2d0f00;--border:#7c2d12;--card:#431407;--acc1:#fb923c;--acc2:#fbbf24;--acc3:#f87171;}
+
+html,body{height:100%;background:#111;}
+body{display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:16px;}
+
+.gw{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);border-radius:20px;overflow:hidden;
+  color:var(--text);transition:background 0.4s;
+  width:100%;max-width:720px;position:relative;
+}
+
+.screen{padding:26px 22px;animation:fadeUp 0.35s ease;}
+.screen.gone{display:none!important;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SETUP ── */
+.setup-title{text-align:center;margin-bottom:24px;}
+.big-emoji{font-size:52px;display:block;animation:bob 2.5s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-9px) rotate(3deg);}}
+.setup-title h1{font-size:24px;font-weight:900;color:var(--acc1);margin:8px 0 4px;}
+.setup-title p{font-size:14px;color:var(--muted);}
+.step-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.name-row{margin-bottom:22px;}
+.name-input{
+  width:100%;background:var(--bg2);border:2px solid var(--border);border-radius:10px;
+  padding:11px 14px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;
+  color:var(--text);outline:none;transition:border-color 0.2s;
+}
+.name-input:focus{border-color:var(--acc1);}
+.name-input::placeholder{color:var(--muted);}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px;}
+.char-card{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;transition:all 0.18s;}
+.char-card:hover,.char-card.sel{border-color:var(--acc1);background:var(--card);}
+.char-emoji{font-size:34px;margin-bottom:5px;}
+.char-name{font-size:12px;font-weight:800;}
+.char-role{font-size:10px;color:var(--muted);margin-top:2px;}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:22px;}
+.theme-card{border-radius:10px;padding:10px 5px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all 0.18s;}
+.theme-card:hover,.theme-card.sel{border-color:#fff;transform:scale(1.06);}
+.theme-dot{width:26px;height:26px;border-radius:50%;margin:0 auto 5px;}
+.theme-name{font-size:10px;font-weight:800;}
+.lang-row{display:flex;gap:9px;margin-bottom:22px;}
+.lang-btn-big{flex:1;background:var(--bg2);border:2px solid var(--border);border-radius:11px;padding:12px 5px;text-align:center;cursor:pointer;font-size:24px;transition:all 0.15s;font-family:'Nunito',sans-serif;}
+.lang-btn-big:hover,.lang-btn-big.sel{border-color:var(--acc1);}
+.lang-btn-big div{font-size:11px;font-weight:800;color:var(--muted);margin-top:5px;}
+.start-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--acc1);color:#000;font-size:16px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:all 0.15s;}
+.start-btn:hover{opacity:0.88;}
+.start-btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.logo{font-size:13px;font-weight:800;color:var(--acc1);}
+.avatar-chip{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px 3px 6px;font-size:12px;font-weight:800;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-right{display:flex;align-items:center;gap:7px;}
+.stars-pill{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:13px;font-weight:800;color:var(--yellow);}
+.lang-switcher{display:flex;gap:3px;}
+.lbtn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 7px;font-size:12px;cursor:pointer;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;transition:all 0.12s;}
+.lbtn:hover,.lbtn.active{border-color:var(--acc1);color:var(--acc1);}
+.progress-wrap{height:5px;background:var(--bg2);}
+.progress-fill{height:100%;background:var(--acc2);transition:width 0.5s ease;}
+.chapter-badge{margin:12px 18px 0;padding:5px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:11px;font-weight:800;color:var(--acc3);display:inline-flex;align-items:center;gap:5px;}
+
+/* ── LEARN PANEL ── */
+.learn-panel{padding:12px 18px 16px;display:none;}
+.learn-panel.vis{display:block;animation:fadeUp 0.3s ease;}
+.term-panel{padding:0 18px 16px;display:none;}
+.term-panel.vis{display:block;animation:fadeUp 0.3s ease;}
+
+.learn-hdr{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.mascot{font-size:44px;animation:bob 2.5s ease-in-out infinite;flex-shrink:0;}
+.learn-hdr-text h2{font-size:16px;font-weight:900;color:var(--acc1);margin-bottom:3px;}
+.learn-hdr-text p{font-size:13px;color:var(--muted);line-height:1.55;}
+
+/* ── ASCII VIZ ── */
+.ascii-viz{
+  background:#000;border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;margin-bottom:12px;font-family:'Space Mono',monospace;
+  font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;
+}
+.ac-green{color:#3fb950;}.ac-blue{color:#58a6ff;}.ac-yellow{color:#e3b341;}
+.ac-red{color:#f85149;}.ac-purple{color:#a371f7;}.ac-orange{color:#fb923c;}
+.ac-muted{color:#8b949e;}.ac-white{color:#e6edf3;}
+
+.cards-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.c-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;opacity:0;transform:translateX(-12px);transition:opacity 0.4s,transform 0.4s;}
+.c-card.show{opacity:1;transform:none;}
+.c-icon{font-size:19px;flex-shrink:0;margin-top:2px;}
+.c-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.c-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+.analogy{background:var(--bg2);border:1px solid var(--acc1);border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:13px;color:var(--acc1);line-height:1.55;opacity:0;transition:opacity 0.4s;}
+.analogy.show{opacity:1;}
+.analogy-lbl{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.cmd-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-family:'Space Mono',monospace;font-size:13px;color:var(--green);margin-bottom:12px;opacity:0;transition:opacity 0.4s;}
+.cmd-box.show{opacity:1;}
+.cmd-lbl{font-size:9px;color:var(--muted);margin-bottom:3px;font-family:'Nunito',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;}
+.try-btn{width:100%;padding:11px;border:none;border-radius:10px;background:var(--acc2);color:#000;font-size:14px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;opacity:0;transition:opacity 0.4s,background 0.15s;}
+.try-btn.show{opacity:1;}
+.try-btn:hover{opacity:0.88;}
+
+/* ── TERMINAL ── */
+.mission-bar{padding:12px 0 9px;display:flex;gap:10px;align-items:center;}
+.mission-mascot{font-size:30px;}
+.mission-bar h3{font-size:14px;font-weight:900;color:var(--acc1);}
+.mission-bar p{font-size:12px;color:var(--muted);}
+.fb{padding:9px 12px;border-radius:8px;font-size:13px;font-weight:700;display:none;margin-bottom:9px;}
+.fb.ok{display:block;background:#0d1f12;border:1px solid var(--acc2);color:var(--green);}
+.fb.err{display:block;background:#1f0d0d;border:1px solid var(--red);color:var(--red);}
+.term-wrap{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:9px;}
+.term-bar{background:var(--bg2);padding:7px 13px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.dr{background:#ff5f57;}.dy{background:#febc2e;}.dg{background:#28c840;}
+.term-out{padding:10px 14px;font-family:'Space Mono',monospace;font-size:12px;min-height:80px;max-height:160px;overflow-y:auto;line-height:1.7;}
+.tl{display:block;}.ts{color:var(--green);}.te{color:var(--red);}.ti{color:var(--blue);}.tm{color:var(--muted);}.tu{color:var(--text);}
+.in-row{display:flex;align-items:center;padding:7px 14px;border-top:1px solid var(--border);gap:6px;}
+.ps{font-family:'Space Mono',monospace;font-size:12px;color:var(--acc1);flex-shrink:0;}
+.tin{flex:1;background:transparent;border:none;outline:none;font-family:'Space Mono',monospace;font-size:12px;color:var(--text);caret-color:var(--acc1);}
+.rbtn{background:var(--acc2);color:#000;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;}
+.back-btn{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;margin-top:2px;}
+.back-btn:hover{color:var(--text);border-color:var(--acc1);}
+
+/* ── LEVEL STRIP ── */
+.levels-section{padding:0 18px 18px;}
+.ch-label{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;margin-top:10px;}
+.levels-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:3px;}
+.lv-card{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;min-width:100px;cursor:pointer;transition:border-color 0.18s;flex-shrink:0;}
+.lv-card.cur{border-color:var(--acc1);background:var(--card);}
+.lv-card.done{border-color:var(--acc2);}
+.lv-card.lock{opacity:0.35;cursor:not-allowed;}
+.lv-icon{font-size:18px;margin-bottom:3px;}
+.lv-name{font-size:10px;font-weight:800;color:var(--text);}
+.lv-cmd{font-family:'Space Mono',monospace;font-size:9px;color:var(--acc1);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lv-st{font-size:9px;color:var(--muted);margin-top:2px;}
+.lv-card.done .lv-st{color:var(--green);}
+
+/* ── CELEBRATION ── */
+.cel-overlay{display:none;position:absolute;inset:0;pointer-events:none;z-index:100;overflow:hidden;border-radius:20px;}
+.cel-overlay.active{display:block;}
+.confetti-piece{position:absolute;animation:cfall linear forwards;}
+@keyframes cfall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(700px) rotate(720deg);opacity:0;}}
+.star-burst{position:absolute;animation:starPop 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+@keyframes starPop{0%{transform:scale(0);opacity:0;}60%{opacity:1;}100%{transform:scale(1.6);opacity:0;}}
+.big-win{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.big-win-text{font-size:22px;font-weight:900;color:#fff;text-align:center;background:rgba(0,0,0,0.85);padding:18px 26px;border-radius:16px;animation:winPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;line-height:1.5;}
+@keyframes winPop{0%{transform:scale(0.3);opacity:0;}100%{transform:scale(1);opacity:1;}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-7px);}40%{transform:translateX(7px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+</style>
+</head>
+<body>
+<div class="gw theme-space" id="gw">
+<div class="cel-overlay" id="cel"></div>
+
+<!-- SETUP -->
+<div class="screen" id="setup-screen">
+  <div class="setup-title">
+    <span class="big-emoji">🚀</span>
+    <h1>Git Hero Academy</h1>
+    <p id="setup-sub">Set up your adventure — then let's go!</p>
+  </div>
+  <div class="step-label" id="lbl-s1">Step 1 — What's your name?</div>
+  <div class="name-row"><input class="name-input" id="name-input" type="text" maxlength="18" autocomplete="off" spellcheck="false"/></div>
+  <div class="step-label" id="lbl-s2">Step 2 — Choose your hero</div>
+  <div class="char-grid" id="char-grid"></div>
+  <div class="step-label" id="lbl-s3">Step 3 — Pick your theme</div>
+  <div class="theme-grid" id="theme-grid"></div>
+  <div class="step-label" id="lbl-s4">Step 4 — Choose your language</div>
+  <div class="lang-row">
+    <div class="lang-btn-big" id="lbig-en" onclick="pickLang('en')">🇬🇧<div>English</div></div>
+    <div class="lang-btn-big" id="lbig-es" onclick="pickLang('es')">🇪🇸<div>Español</div></div>
+    <div class="lang-btn-big" id="lbig-nl" onclick="pickLang('nl')">🇳🇱<div>Nederlands</div></div>
+  </div>
+  <button class="start-btn" id="start-btn" onclick="startGame()" disabled>Fill in all steps above!</button>
+</div>
+
+<!-- GAME -->
+<div class="screen gone" id="game-screen" style="padding:0;">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="logo">Git Hero Academy</div>
+      <div class="avatar-chip" id="avatar-chip">🧑‍🚀</div>
+    </div>
+    <div class="topbar-right">
+      <div class="stars-pill" id="stars-pill">⭐ 0</div>
+      <div class="lang-switcher">
+        <button class="lbtn" id="lb-en" onclick="switchLang('en')">🇬🇧</button>
+        <button class="lbtn" id="lb-es" onclick="switchLang('es')">🇪🇸</button>
+        <button class="lbtn" id="lb-nl" onclick="switchLang('nl')">🇳🇱</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+  <div class="chapter-badge" id="chapter-badge">📦 Chapter 1</div>
+
+  <div class="learn-panel" id="learn-panel">
+    <div class="learn-hdr">
+      <div class="mascot" id="mascot">🧑‍🚀</div>
+      <div class="learn-hdr-text"><h2 id="l-title"></h2><p id="l-intro"></p></div>
+    </div>
+    <div id="ascii-container"></div>
+    <div class="cards-wrap" id="cards-wrap"></div>
+    <div class="analogy" id="analogy"><div class="analogy-lbl" id="analogy-lbl"></div><span id="analogy-txt"></span></div>
+    <div class="cmd-box" id="cmd-box"><div class="cmd-lbl" id="cmd-lbl"></div><span id="cmd-preview"></span></div>
+    <button class="try-btn" id="try-btn" onclick="goTerminal()"></button>
+  </div>
+
+  <div class="term-panel" id="term-panel">
+    <div class="mission-bar">
+      <div class="mission-mascot" id="mm">🧑‍🚀</div>
+      <div><h3 id="m-title"></h3><p id="m-prompt"></p></div>
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="term-wrap">
+      <div class="term-bar"><span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span><span style="margin-left:6px;" id="term-path">~/project</span></div>
+      <div class="term-out" id="tout"></div>
+      <div class="in-row"><span class="ps">$</span><input class="tin" id="tin" autocomplete="off" spellcheck="false"/><button class="rbtn" id="rbtn" onclick="runCmd()"></button></div>
+    </div>
+    <button class="back-btn" id="bkbtn" onclick="goLearn()"></button>
+  </div>
+
+  <div class="levels-section" id="levels-section"></div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════ AUDIO
+let audioCtx=null;
+function getAC(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function tone(freq,type,dur,vol=0.18,delay=0){
+  try{const c=getAC(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=type;o.frequency.value=freq;const t=c.currentTime+delay;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);o.start(t);o.stop(t+dur);}catch(e){}
+}
+function sfxOk(){[[523,0],[659,0.1],[784,0.2],[1047,0.3]].forEach(([f,d])=>tone(f,'sine',0.18,0.2,d));}
+function sfxWin(){[[523,0],[659,0.08],[784,0.16],[1047,0.24],[1319,0.34],[1568,0.44]].forEach(([f,d])=>tone(f,'sine',0.25,0.22,d));}
+function sfxErr(){tone(180,'sawtooth',0.25,0.15);setTimeout(()=>tone(150,'sawtooth',0.2,0.12),120);}
+function sfxClick(){tone(800,'sine',0.06,0.1);}
+function sfxReveal(){tone(660,'triangle',0.1,0.12);}
+function sfxLevel(){[[400,0],[600,0.12],[800,0.24]].forEach(([f,d])=>tone(f,'triangle',0.18,0.18,d));}
+
+// ═══════════════════════════════════════════════════════ ASCII ANIMATIONS
+
+// ═══════════════════════════════════════════════════════ I18N
+const i18n={
+  en:{
+    setupSub:"Set up your adventure — then let's go!",
+    s1:"Step 1 — What's your name?",s2:"Step 2 — Choose your hero",
+    s3:"Step 3 — Pick your theme",s4:"Step 4 — Choose your language",
+    namePH:"Type your name here...",
+    startOff:"Fill in name, pick a hero, theme & language!",
+    startOn:n=>`🚀 Let's go, ${n}!`,
+    analogy:"Real-world analogy",cmdLbl:"The command you'll use",
+    tryBtn:"I get it — let me try it! ➜",run:"Run",back:"← Review the lesson",
+    ready:n=>`Ready, ${n}! Type the command below.`,
+    wrongGit:"That's a git command, but not the right one here!",
+    wrongGitFb:"❌ Close! Go back and reread the lesson.",
+    notFound:c=>`command not found: ${c}`,
+    notFoundFb:'❌ All commands start with "git". Check the lesson!',
+    inProg:"in progress",locked:"locked",done:"✓ done",
+    stars:s=>`⭐ ${s} star${s!==1?"s":""}`,
+    win:n=>`🏆 Amazing, ${n}!\nYou are a Git Hero!`,
+  },
+  es:{
+    setupSub:"¡Configura tu aventura y empecemos!",
+    s1:"Paso 1 — ¿Cómo te llamas?",s2:"Paso 2 — Elige tu héroe",
+    s3:"Paso 3 — Elige tu tema",s4:"Paso 4 — Elige tu idioma",
+    namePH:"Escribe tu nombre aquí...",
+    startOff:"¡Escribe tu nombre, elige héroe, tema e idioma!",
+    startOn:n=>`🚀 ¡Vamos, ${n}!`,
+    analogy:"Analogía del mundo real",cmdLbl:"El comando que usarás",
+    tryBtn:"¡Lo entiendo! ¡Déjame intentarlo! ➜",run:"Ejecutar",back:"← Revisar la lección",
+    ready:n=>`¡Listo, ${n}! Escribe el comando abajo.`,
+    wrongGit:"¡Ese es un comando git, pero no el correcto aquí!",
+    wrongGitFb:"❌ ¡Casi! Vuelve a leer la lección.",
+    notFound:c=>`comando no encontrado: ${c}`,
+    notFoundFb:'❌ Todos los comandos empiezan con "git". ¡Revisa!',
+    inProg:"en progreso",locked:"bloqueado",done:"✓ hecho",
+    stars:s=>`⭐ ${s} estrella${s!==1?"s":""}`,
+    win:n=>`🏆 ¡Increíble, ${n}!\n¡Eres un Héroe de Git!`,
+  },
+  nl:{
+    setupSub:"Stel je avontuur in — en dan gaan we!",
+    s1:"Stap 1 — Wat is je naam?",s2:"Stap 2 — Kies je held",
+    s3:"Stap 3 — Kies je thema",s4:"Stap 4 — Kies je taal",
+    namePH:"Typ hier je naam...",
+    startOff:"Vul je naam in, kies held, thema en taal!",
+    startOn:n=>`🚀 Kom op, ${n}!`,
+    analogy:"Vergelijking uit het echte leven",cmdLbl:"Het commando dat je gebruikt",
+    tryBtn:"Ik snap het — laat me proberen! ➜",run:"Uitvoeren",back:"← Les opnieuw bekijken",
+    ready:n=>`Klaar, ${n}! Typ het commando hieronder.`,
+    wrongGit:"Dat is een git-commando, maar niet het juiste hier!",
+    wrongGitFb:"❌ Bijna! Lees de les nog eens.",
+    notFound:c=>`commando niet gevonden: ${c}`,
+    notFoundFb:'❌ Alle commando\'s beginnen met "git". Bekijk de les!',
+    inProg:"bezig",locked:"vergrendeld",done:"✓ klaar",
+    stars:s=>`⭐ ${s} ster${s!==1?"ren":""}`,
+    win:n=>`🏆 Geweldig, ${n}!\nJe bent een Git Held!`,
+  }
+};
+
+// ═══════════════════════════════════════════════════════ CHARS / THEMES
+const CHARS=[
+  {id:'astronaut',e:'🧑‍🚀',name:{en:'Astronaut',es:'Astronauta',nl:'Astronaut'},role:{en:'Space explorer',es:'Explorador espacial',nl:'Ruimteverkenner'}},
+  {id:'ninja',e:'🥷',name:{en:'Ninja',es:'Ninja',nl:'Ninja'},role:{en:'Code warrior',es:'Guerrero del código',nl:'Code-krijger'}},
+  {id:'witch',e:'🧙‍♀️',name:{en:'Witch',es:'Bruja',nl:'Heks'},role:{en:'Magic coder',es:'Programadora mágica',nl:'Magische programmeur'}},
+  {id:'robot',e:'🤖',name:{en:'Robot',es:'Robot',nl:'Robot'},role:{en:'Tech genius',es:'Genio tecnológico',nl:'Tech-genie'}},
+  {id:'dragon',e:'🐲',name:{en:'Dragon',es:'Dragón',nl:'Draak'},role:{en:'Mighty coder',es:'Poderosa programadora',nl:'Machtige coder'}},
+  {id:'unicorn',e:'🦄',name:{en:'Unicorn',es:'Unicornio',nl:'Eenhoorn'},role:{en:'Rainbow hacker',es:'Hacker arcoíris',nl:'Regenboog-hacker'}},
+];
+const THEMES=[
+  {id:'space',name:{en:'Space',es:'Espacio',nl:'Ruimte'},bg:'#0d1117',dot:'#58a6ff'},
+  {id:'jungle',name:{en:'Jungle',es:'Jungla',nl:'Jungle'},bg:'#0a1f0d',dot:'#4ade80'},
+  {id:'ocean',name:{en:'Ocean',es:'Océano',nl:'Oceaan'},bg:'#030d1a',dot:'#38bdf8'},
+  {id:'candy',name:{en:'Candy',es:'Dulces',nl:'Snoep'},bg:'#1a0a2e',dot:'#f472b6'},
+  {id:'fire',name:{en:'Fire',es:'Fuego',nl:'Vuur'},bg:'#1a0700',dot:'#fb923c'},
+];
+const CONF=['#f472b6','#a371f7','#38bdf8','#4ade80','#fbbf24','#fb923c','#e6edf3','#f87171'];
+
+// helper
+function tx(o){return o?.(o[lang]||o.en||Object.values(o)[0])??o;}
+function t(k){return i18n[lang][k];}
+
+// ═══════════════════════════════════════════════════════ LEVELS
+const LEVELS=[
+// ─── CHAPTER 1: THE THREE AREAS ──────────────────────────────────────────────
+{ch:1,ce:'📦',icon:'🗺️',asciiHtml:`<span class="ac-yellow">  The Three Git Areas</span>
+<span class="ac-muted">  ─────────────────────────────────────────────────────────</span>
+
+  <span class="ac-orange">┌──────────────────┐</span>  <span class="ac-blue">┌──────────────────┐</span>  <span class="ac-green">┌──────────────────┐</span>
+  <span class="ac-orange">│  Working Area    │</span>  <span class="ac-blue">│  Staging Area    │</span>  <span class="ac-green">│  Repository      │</span>
+  <span class="ac-orange">│  (edit files)    │</span>──<span class="ac-yellow">git add .</span>──▶<span class="ac-blue">│  (ready files)   │</span>──<span class="ac-yellow">git commit</span>──▶<span class="ac-green">│  (saved forever) │</span>
+  <span class="ac-orange">│  🔴 modified     │</span>  <span class="ac-blue">│  🟢 staged       │</span>  <span class="ac-green">│  ● a4f2c1b       │</span>
+  <span class="ac-orange">└──────────────────┘</span>  <span class="ac-blue">└──────────────────┘</span>  <span class="ac-green">└──────────────────┘</span>
+  <span class="ac-muted">  Your computer         Index / Cache          Git database</span>`,
+ name:{en:'The 3 Areas',es:'Las 3 Zonas',nl:'De 3 Gebieden'},
+ learnTitle:{en:"The 3 areas of Git",es:"Las 3 zonas de Git",nl:"De 3 gebieden van Git"},
+ intro:{en:"Before any commands, understand where your files live. Git has THREE areas — watch them move!",es:"Antes de cualquier comando, entiende dónde viven tus archivos. ¡Git tiene TRES zonas!",nl:"Voordat je commando's leert, begrijp je waar je bestanden leven. Git heeft DRIE gebieden!"},
+ concepts:[
+   {icon:'🗂️',title:{en:'Working Area',es:'Área de trabajo',nl:'Werkgebied'},desc:{en:"Your files as you edit them. Red in git status = modified here but not yet staged.",es:"Tus archivos mientras los editas. Rojo en git status = modificado aquí pero no preparado.",nl:"Je bestanden terwijl je ze bewerkt. Rood in git status = gewijzigd maar nog niet klaargezet."}},
+   {icon:'📦',title:{en:'Staging Area (Index)',es:'Área de preparación (Índice)',nl:'Staginggebied (Index)'},desc:{en:"Files you've chosen to include in the next commit. Green in git status = ready!",es:"Archivos que elegiste incluir en el próximo commit. ¡Verde en git status = listo!",nl:"Bestanden die je hebt gekozen voor de volgende commit. Groen in git status = klaar!"}},
+   {icon:'🔒',title:{en:'Repository (Committed)',es:'Repositorio (Comprometido)',nl:'Repository (Gecommit)'},desc:{en:"Permanent snapshots. Once committed, your work is safely saved in Git's database forever.",es:"Instantáneas permanentes. Una vez comprometido, tu trabajo está guardado en la base de datos de Git.",nl:"Permanente momentopnames. Eenmaal gecommit, is je werk voor altijd veilig opgeslagen."}},
+ ],
+ analogy:{en:"Like cooking: Working Area = ingredients on counter, Staging = food on the plate, Committed = meal served and logged in the menu!",es:"Como cocinar: Área de trabajo = ingredientes en el mostrador, Staging = comida en el plato, Committed = comida servida y registrada en el menú.",nl:"Als koken: Werkgebied = ingrediënten op het aanrecht, Staging = eten op het bord, Committed = maaltijd geserveerd en in het menu genoteerd!"},
+ cmdPreview:'git status',termPath:'~/project',
+ accept:['git status'],
+ successMsg:'On branch main\nnothing to commit, working tree clean ✅',
+ story:{en:'🎉 You can read git status like a pro now!',es:'🎉 ¡Ahora puedes leer git status como un profesional!',nl:'🎉 Je kunt git status nu lezen als een pro!'},
+ missionTitle:{en:'Type: git status',es:'Escribe: git status',nl:'Typ: git status'},
+ missionPrompt:{en:"See the three areas in action!",es:"¡Ve las tres zonas en acción!",nl:"Bekijk de drie gebieden in actie!"},
+ done:false},
+
+{ch:1,ce:'📦',icon:'🚀',asciiHtml:null,
+ name:{en:'git init',es:'git init',nl:'git init'},
+ learnTitle:{en:"Let's learn: git init",es:"Aprendamos: git init",nl:"Laten we leren: git init"},
+ intro:{en:"Every Git project starts with git init. It wakes Git up and starts watching your folder.",es:"Todo proyecto Git empieza con git init. Le dice a Git que empiece a vigilar tu carpeta.",nl:"Elk Git-project begint met git init. Het vertelt Git om je map te bewaken."},
+ concepts:[
+   {icon:'📁',title:{en:'Creates .git folder',es:'Crea carpeta .git',nl:'Maakt .git-map aan'},desc:{en:"A hidden .git folder appears — that is Git's brain for your project.",es:"Aparece una carpeta oculta .git — ese es el cerebro de Git para tu proyecto.",nl:"Er verschijnt een verborgen .git-map — dat is Git's brein voor je project."}},
+   {icon:'🔭',title:{en:'Starts tracking',es:'Empieza a rastrear',nl:'Begint met bijhouden'},desc:{en:"From now on Git watches every file you create, change or delete in this folder.",es:"A partir de ahora Git vigila cada archivo que crees, cambies o elimines en esta carpeta.",nl:"Vanaf nu houdt Git elk bestand bij dat je aanmaakt, wijzigt of verwijdert."}},
+ ],
+ analogy:{en:"Like opening a brand new notebook and writing your name on the cover. Now it's official!",es:"¡Como abrir un cuaderno nuevo y escribir tu nombre en la portada. ¡Ahora es oficial!",nl:"Als een gloednieuw schrift openen en je naam op de voorkant schrijven. Nu is het officieel!"},
+ cmdPreview:'git init',termPath:'~/project',
+ accept:['git init'],
+ successMsg:'Initialised empty Git repository in ~/project/.git/',
+ story:{en:'🎉 Git is awake and watching!',es:'🎉 ¡Git está despierto y vigilando!',nl:'🎉 Git is wakker en bewaakt je project!'},
+ missionTitle:{en:'Type: git init',es:'Escribe: git init',nl:'Typ: git init'},
+ missionPrompt:{en:"Start a new Git repository!",es:"¡Inicia un nuevo repositorio Git!",nl:"Start een nieuw Git-repository!"},
+ done:false},
+
+{ch:1,ce:'📦',icon:'📥',asciiHtml:null,
+ name:{en:'git clone',es:'git clone',nl:'git clone'},
+ learnTitle:{en:"Let's learn: git clone",es:"Aprendamos: git clone",nl:"Laten we leren: git clone"},
+ intro:{en:"Instead of starting fresh, clone downloads an existing project from GitHub — all its history included!",es:"En lugar de empezar de cero, clone descarga un proyecto existente de GitHub — ¡incluido todo su historial!",nl:"In plaats van opnieuw te beginnen, downloadt clone een bestaand project van GitHub — inclusief alle geschiedenis!"},
+ concepts:[
+   {icon:'📥',title:{en:'Downloads everything',es:'Descarga todo',nl:'Downloadt alles'},desc:{en:"git clone copies the entire project: all files, all commits, all branches — everything!",es:"git clone copia todo el proyecto: todos los archivos, todos los commits, todas las ramas.",nl:"git clone kopieert het hele project: alle bestanden, alle commits, alle branches — alles!"}},
+   {icon:'🔗',title:{en:'Sets up remote',es:'Configura el remoto',nl:'Stelt remote in'},desc:{en:"After cloning, origin is automatically set to the URL you cloned from. Handy!",es:"Después de clonar, origin se configura automáticamente a la URL desde donde clonaste.",nl:"Na het klonen wordt origin automatisch ingesteld op de URL waar je van gekloneerd hebt."}},
+ ],
+ analogy:{en:"Like photocopying someone's entire notebook — you get every page, every drawing, every note.",es:"Como fotocopiar el cuaderno completo de alguien — obtienes cada página, cada dibujo, cada nota.",nl:"Als iemands hele schrift fotokopiëren — je krijgt elke pagina, elke tekening, elke notitie."},
+ cmdPreview:'git clone https://github.com/user/project.git',termPath:'~/',
+ accept:['git clone'],
+ successMsg:"Cloning into 'project'...\nremote: Enumerating objects: 42, done.\nremote: Total 42 (delta 0)\nReceiving objects: 100% (42/42), done.",
+ story:{en:'🎉 Project cloned! You have the full history.',es:'🎉 ¡Proyecto clonado! Tienes el historial completo.',nl:'🎉 Project gekloond! Je hebt de volledige geschiedenis.'},
+ missionTitle:{en:'Type: git clone https://github.com/user/project.git',es:'Escribe: git clone https://github.com/user/project.git',nl:'Typ: git clone https://github.com/user/project.git'},
+ missionPrompt:{en:"Clone a project from GitHub!",es:"¡Clona un proyecto de GitHub!",nl:"Kloon een project van GitHub!"},
+ done:false},
+
+{ch:1,ce:'📦',icon:'📸',asciiHtml:null,
+ name:{en:'git add & commit',es:'git add & commit',nl:'git add & commit'},
+ learnTitle:{en:"git add · git commit",es:"git add · git commit",nl:"git add · git commit"},
+ intro:{en:"Stage your files then save a snapshot. The classic two-step Git workflow!",es:"Prepara tus archivos y luego guarda una instantánea. ¡El clásico flujo de trabajo de Git en dos pasos!",nl:"Zet je bestanden klaar en sla dan een momentopname op. De klassieke Git-workflow in twee stappen!"},
+ concepts:[
+   {icon:'🧺',title:{en:'git add . — stage everything',es:'git add . — prepara todo',nl:'git add . — zet alles klaar'},desc:{en:"Moves all changes from Working Area to Staging Area. The dot means 'everything'.",es:"Mueve todos los cambios del Área de trabajo al Área de preparación. El punto significa 'todo'.",nl:"Verplaatst alle wijzigingen van Werkgebied naar Staginggebied. De punt betekent 'alles'."}},
+   {icon:'💾',title:{en:'git commit -m "message"',es:'git commit -m "mensaje"',nl:'git commit -m "bericht"'},desc:{en:"Takes everything in Staging and saves it permanently to the Repository with a label.",es:"Toma todo en el Área de preparación y lo guarda permanentemente en el Repositorio con una etiqueta.",nl:"Neemt alles in Staging en slaat het permanent op in de Repository met een label."}},
+ ],
+ analogy:{en:"Add = packing your bag. Commit = handing the bag to the teacher with a note saying what's inside!",es:"Add = empacar tu mochila. Commit = entregar la mochila al maestro con una nota diciendo qué hay dentro.",nl:"Add = je rugzak inpakken. Commit = de rugzak aan de leraar geven met een briefje wat erin zit!"},
+ cmdPreview:'git add . && git commit -m "my message"',termPath:'~/project',
+ accept:['git add','git commit'],
+ successMsg:'[main a4f2c1b] my message\n 3 files changed, 42 insertions(+)',
+ story:{en:'🎉 Staged and committed! Saved forever.',es:'🎉 ¡Preparado y comprometido! Guardado para siempre.',nl:'🎉 Klaargezet en gecommit! Voor altijd opgeslagen.'},
+ missionTitle:{en:'Type: git add . (then git commit -m "...")',es:'Escribe: git add . (luego git commit -m "...")',nl:'Typ: git add . (dan git commit -m "...")'},
+ missionPrompt:{en:"Stage and commit your work!",es:"¡Prepara y haz commit de tu trabajo!",nl:"Zet klaar en commit je werk!"},
+ done:false},
+
+{ch:1,ce:'📦',icon:'↩️',asciiHtml:null,
+ name:{en:'git restore',es:'git restore',nl:'git restore'},
+ learnTitle:{en:"Let's learn: git restore",es:"Aprendamos: git restore",nl:"Laten we leren: git restore"},
+ intro:{en:"Made a mistake in your files? git restore undoes changes — either in your working area or in staging!",es:"¿Cometiste un error en tus archivos? git restore deshace cambios — en el área de trabajo o en el staging.",nl:"Een fout gemaakt in je bestanden? git restore maakt wijzigingen ongedaan — in je werkgebied of in staging!"},
+ concepts:[
+   {icon:'🔄',title:{en:'git restore file.js',es:'git restore archivo.js',nl:'git restore bestand.js'},desc:{en:"Throws away changes in your Working Area and restores the file to how it was in the last commit.",es:"Descarta los cambios en tu Área de trabajo y restaura el archivo a como estaba en el último commit.",nl:"Gooit wijzigingen in je Werkgebied weg en herstelt het bestand naar hoe het was in de laatste commit."}},
+   {icon:'📦',title:{en:'git restore --staged file.js',es:'git restore --staged archivo.js',nl:'git restore --staged bestand.js'},desc:{en:"Moves a file BACK from Staging Area to Working Area — it was accidentally staged and you want to unstage it.",es:"Mueve un archivo DE VUELTA del Área de preparación al Área de trabajo — lo preparaste por accidente.",nl:"Verplaatst een bestand TERUG van Staginggebied naar Werkgebied — het was per ongeluk klaargezet."}},
+ ],
+ analogy:{en:"Like an undo button! restore unstages or discards your changes safely.",es:"¡Como un botón de deshacer! restore deshace tus cambios de forma segura.",nl:"Als een ongedaan-knop! restore maakt je wijzigingen veilig ongedaan."},
+ cmdPreview:'git restore --staged app.js',termPath:'~/project',
+ accept:['git restore'],
+ successMsg:'Unstaged changes in app.js\nChanges now in working area.',
+ story:{en:'🎉 File moved back to working area!',es:'🎉 ¡Archivo movido de vuelta al área de trabajo!',nl:'🎉 Bestand teruggezet naar het werkgebied!'},
+ missionTitle:{en:'Type: git restore --staged app.js',es:'Escribe: git restore --staged app.js',nl:'Typ: git restore --staged app.js'},
+ missionPrompt:{en:"Unstage a file from the staging area!",es:"¡Quita un archivo del área de preparación!",nl:"Verwijder een bestand uit het staginggebied!"},
+ done:false},
+
+{ch:1,ce:'📦',icon:'🗑️',asciiHtml:null,
+ name:{en:'git rm',es:'git rm',nl:'git rm'},
+ learnTitle:{en:"Let's learn: git rm",es:"Aprendamos: git rm",nl:"Laten we leren: git rm"},
+ intro:{en:"Need to remove a file from Git tracking? git rm has two useful options depending on what you want!",es:"¿Necesitas eliminar un archivo del seguimiento de Git? ¡git rm tiene dos opciones útiles!",nl:"Wil je een bestand verwijderen uit Git-tracking? git rm heeft twee handige opties!"},
+ concepts:[
+   {icon:'🗃️',title:{en:'git rm --cached file',es:'git rm --cached archivo',nl:'git rm --cached bestand'},desc:{en:"Removes the file from Git tracking (Staging + Repository) but KEEPS the file on your disk. Great for files you added by accident.",es:"Elimina el archivo del seguimiento de Git pero MANTIENE el archivo en tu disco. Ideal para archivos agregados por accidente.",nl:"Verwijdert het bestand uit Git-tracking maar BEHOUDT het bestand op je schijf. Geweldig voor per ongeluk toegevoegde bestanden."}},
+   {icon:'🔥',title:{en:'git rm --force file',es:'git rm --force archivo',nl:'git rm --force bestand'},desc:{en:"Forcefully removes the file from both Git tracking AND your disk. Use with care!",es:"Elimina forzosamente el archivo tanto del seguimiento de Git como de tu disco. ¡Úsalo con cuidado!",nl:"Verwijdert het bestand geforceerd uit zowel Git-tracking ALS je schijf. Gebruik met voorzichtigheid!"}},
+ ],
+ analogy:{en:"--cached = removing a book from the library catalogue but leaving it on the shelf. --force = removing it from catalogue AND throwing it away!",es:"--cached = eliminar un libro del catálogo de la biblioteca pero dejarlo en el estante. --force = eliminarlo del catálogo Y tirarlo.",nl:"--cached = een boek uit de bibliotheekcatalogus verwijderen maar op het rek laten staan. --force = uit catalogus én weggooien!"},
+ cmdPreview:'git rm --cached secret.txt',termPath:'~/project',
+ accept:['git rm'],
+ successMsg:"rm 'secret.txt'\nFile removed from tracking. Still exists on disk.",
+ story:{en:'🎉 File untracked! Still on your disk.',es:'🎉 ¡Archivo sin seguimiento! Sigue en tu disco.',nl:'🎉 Bestand niet meer bijgehouden! Nog steeds op je schijf.'},
+ missionTitle:{en:'Type: git rm --cached secret.txt',es:'Escribe: git rm --cached secret.txt',nl:'Typ: git rm --cached secret.txt'},
+ missionPrompt:{en:"Remove a file from Git tracking (keep on disk)!",es:"¡Elimina un archivo del seguimiento de Git (mantén en disco)!",nl:"Verwijder een bestand uit Git-tracking (bewaar op schijf)!"},
+ done:false},
+
+// ─── CHAPTER 2: HISTORY & LOG ─────────────────────────────────────────────────
+{ch:2,ce:'📜',icon:'📜',asciiHtml:null,
+ name:{en:'git log',es:'git log',nl:'git log'},
+ learnTitle:{en:"Let's learn: git log",es:"Aprendamos: git log",nl:"Laten we leren: git log"},
+ intro:{en:"git log shows your entire commit history. But there are cool flags to make it even more useful!",es:"git log muestra todo tu historial de commits. ¡Pero hay banderas geniales para hacerlo aún más útil!",nl:"git log toont je volledige commitgeschiedenis. Maar er zijn coole opties om het nog handiger te maken!"},
+ concepts:[
+   {icon:'📋',title:{en:'git log --oneline',es:'git log --oneline',nl:'git log --oneline'},desc:{en:"One line per commit — hash + message. Much faster to scan when you have lots of history.",es:"Una línea por commit — hash + mensaje. Mucho más rápido de escanear cuando tienes mucho historial.",nl:"Eén regel per commit — hash + bericht. Veel sneller te scannen als je veel geschiedenis hebt."}},
+   {icon:'📄',title:{en:'git log --name-only',es:'git log --name-only',nl:'git log --name-only'},desc:{en:"Shows which files were changed in each commit. Great for finding when a specific file was touched.",es:"Muestra qué archivos se cambiaron en cada commit. Genial para encontrar cuándo se tocó un archivo específico.",nl:"Toont welke bestanden zijn gewijzigd in elke commit. Geweldig om te vinden wanneer een specifiek bestand is aangeraakt."}},
+   {icon:'🔢',title:{en:'git log --oneline -n 3',es:'git log --oneline -n 3',nl:'git log --oneline -n 3'},desc:{en:"Shows only the last 3 commits. Change the number to see more or fewer!",es:"Muestra solo los últimos 3 commits. ¡Cambia el número para ver más o menos!",nl:"Toont alleen de laatste 3 commits. Verander het getal om meer of minder te zien!"}},
+ ],
+ analogy:{en:"git log is your diary. --oneline is the quick index, --name-only shows what was in each entry, -n 3 shows just the last few pages!",es:"git log es tu diario. --oneline es el índice rápido, --name-only muestra qué había en cada entrada, -n 3 muestra las últimas páginas.",nl:"git log is je dagboek. --oneline is de snelle index, --name-only toont wat in elk item stond, -n 3 toont alleen de laatste pagina's!"},
+ cmdPreview:'git log --oneline -n 3',termPath:'~/project',
+ accept:['git log'],
+ successMsg:'a4f2c1b (HEAD -> main) fix rocket engine\nd3e2f1a add star field\nc2b1a0f initial commit',
+ story:{en:"🎉 You can read Git's history like a book now!",es:'🎉 ¡Ahora puedes leer el historial de Git como un libro!',nl:'🎉 Je kunt Git-geschiedenis nu lezen als een boek!'},
+ missionTitle:{en:'Type: git log --oneline -n 3',es:'Escribe: git log --oneline -n 3',nl:'Typ: git log --oneline -n 3'},
+ missionPrompt:{en:"Show the last 3 commits in one line each!",es:"¡Muestra los últimos 3 commits en una línea cada uno!",nl:"Toon de laatste 3 commits in één regel elk!"},
+ done:false},
+
+// ─── CHAPTER 3: BRANCHING ────────────────────────────────────────────────────
+{ch:3,ce:'🌿',icon:'🌿',asciiHtml:`<span class="ac-yellow">  How branching works</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-green">● a1b2c3</span>  "first commit"
+  <span class="ac-muted">│</span>
+  <span class="ac-green">● d4e5f6</span>  "add styles"
+  <span class="ac-muted">│</span>
+  <span class="ac-green">● g7h8i9</span>  "fix bug"
+     <span class="ac-muted">│</span>
+     <span class="ac-green">├──</span> <span class="ac-blue">◆ HEAD → main</span>
+     <span class="ac-muted">│</span>
+     <span class="ac-green">└──</span> <span class="ac-purple">◇ new-feature</span>  <span class="ac-yellow">← your new branch!</span>
+
+  <span class="ac-muted">Both point to same commit — then diverge as you add more.</span>`,
+ name:{en:'git branch',es:'git branch',nl:'git branch'},
+ learnTitle:{en:"Let's learn: git branch",es:"Aprendamos: git branch",nl:"Laten we leren: git branch"},
+ intro:{en:"Branches are parallel universes for your code! Try new ideas safely without touching main.",es:"¡Las ramas son universos paralelos para tu código! Prueba nuevas ideas sin tocar main.",nl:"Branches zijn parallelle universums voor je code! Probeer nieuwe ideeën veilig zonder main aan te raken."},
+ concepts:[
+   {icon:'🌳',title:{en:'git branch name',es:'git branch nombre',nl:'git branch naam'},desc:{en:"Creates a new branch from your current position. Doesn't switch to it yet.",es:"Crea una nueva rama desde tu posición actual. Aún no te cambia a ella.",nl:"Maakt een nieuwe branch aan vanaf je huidige positie. Wisselt er nog niet naartoe."}},
+   {icon:'📋',title:{en:'git branch (list)',es:'git branch (listar)',nl:'git branch (lijst)'},desc:{en:"Run git branch with no arguments to list ALL branches. The * shows which one you're on.",es:"Ejecuta git branch sin argumentos para listar TODAS las ramas. El * muestra en cuál estás.",nl:"Voer git branch uit zonder argumenten om ALLE branches te tonen. De * toont welke je actief hebt."}},
+   {icon:'🗑️',title:{en:'git branch -d name',es:'git branch -d nombre',nl:'git branch -d naam'},desc:{en:"Deletes a branch after you're done with it. Git won't let you delete unmerged branches without -D.",es:"Elimina una rama después de terminar con ella. Git no te dejará eliminar ramas sin fusionar sin -D.",nl:"Verwijdert een branch nadat je klaar bent. Git laat je geen niet-samengevoegde branches verwijderen zonder -D."}},
+ ],
+ analogy:{en:"Like making a copy of your painting to try a new colour scheme — the original is safe!",es:"¡Como hacer una copia de tu pintura para probar un nuevo esquema de colores — el original está seguro!",nl:"Als een kopie van je schilderij maken om een nieuw kleurenschema te proberen — het origineel is veilig!"},
+ cmdPreview:'git branch new-feature',termPath:'~/project',
+ accept:['git branch'],
+ successMsg:"Branch 'new-feature' created.\nRun: git checkout new-feature to switch to it.",
+ story:{en:"🎉 New branch created! Main is untouched.",es:'🎉 ¡Nueva rama creada! Main no se tocó.',nl:'🎉 Nieuwe branch aangemaakt! Main is onaangetast.'},
+ missionTitle:{en:'Type: git branch new-feature',es:'Escribe: git branch new-feature',nl:'Typ: git branch new-feature'},
+ missionPrompt:{en:"Create a new branch!",es:"¡Crea una nueva rama!",nl:"Maak een nieuwe branch aan!"},
+ done:false},
+
+{ch:3,ce:'🌿',icon:'🔄',asciiHtml:null,
+ name:{en:'git checkout',es:'git checkout',nl:'git checkout'},
+ learnTitle:{en:"Let's learn: git checkout",es:"Aprendamos: git checkout",nl:"Laten we leren: git checkout"},
+ intro:{en:"Switch between branches with git checkout. The -b flag creates AND switches in one step!",es:"Cambia entre ramas con git checkout. ¡La bandera -b crea Y cambia en un solo paso!",nl:"Wissel tussen branches met git checkout. De -b vlag maakt aan EN wisselt in één stap!"},
+ concepts:[
+   {icon:'🚂',title:{en:'git checkout branch-name',es:'git checkout nombre-rama',nl:'git checkout branch-naam'},desc:{en:"Switches your working area to that branch. Files update to match the branch state!",es:"Cambia tu área de trabajo a esa rama. ¡Los archivos se actualizan para coincidir con el estado de la rama!",nl:"Wisselt je werkgebied naar die branch. Bestanden worden bijgewerkt om overeen te komen met de branch-staat!"}},
+   {icon:'⚡',title:{en:'git checkout -b new-branch',es:'git checkout -b nueva-rama',nl:'git checkout -b nieuwe-branch'},desc:{en:"Creates a new branch AND switches to it in one command. The shortcut you'll use most!",es:"Crea una nueva rama Y cambia a ella en un solo comando. ¡El atajo que más usarás!",nl:"Maakt een nieuwe branch aan EN wisselt er naartoe in één commando. De snelkoppeling die je het meest gebruikt!"}},
+ ],
+ analogy:{en:"Like changing classrooms — you take yourself (HEAD) to a different room (branch). Each room has different work on the board!",es:"Como cambiar de aula — te llevas a ti mismo (HEAD) a un aula diferente (rama). ¡Cada aula tiene trabajo diferente en la pizarra!",nl:"Als van klaslokaal wisselen — je neemt jezelf (HEAD) mee naar een ander lokaal (branch). Elk lokaal heeft ander werk op het bord!"},
+ cmdPreview:'git checkout -b new-feature',termPath:'~/project',
+ accept:['git checkout'],
+ successMsg:"Switched to a new branch 'new-feature'",
+ story:{en:"🎉 Switched! You're now on new-feature.",es:'🎉 ¡Cambiado! Ahora estás en new-feature.',nl:'🎉 Gewisseld! Je bent nu op new-feature.'},
+ missionTitle:{en:'Type: git checkout -b new-feature',es:'Escribe: git checkout -b new-feature',nl:'Typ: git checkout -b new-feature'},
+ missionPrompt:{en:"Create and switch to a new branch!",es:"¡Crea y cambia a una nueva rama!",nl:"Maak een nieuwe branch aan en wissel ernaar!"},
+ done:false},
+
+{ch:3,ce:'🌿',icon:'🔗',asciiHtml:`<span class="ac-yellow">  git merge — combining two branches</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-green">Before:</span>
+  <span class="ac-green">● a1b2</span> ─── <span class="ac-green">● c3d4</span> ─── <span class="ac-green">● e5f6</span>   <span class="ac-muted">(HEAD→main)</span>
+                    <span class="ac-muted">│</span>
+                    <span class="ac-purple">└── ● g7h8</span> ─── <span class="ac-purple">● i9j0</span>  <span class="ac-muted">(feat)</span>
+
+  <span class="ac-yellow">After:</span>  <span class="ac-muted">git checkout main → git merge feat</span>
+  <span class="ac-green">● a1b2</span> ─── <span class="ac-green">● c3d4</span> ─── <span class="ac-green">● e5f6</span> ──────────────┐
+                    <span class="ac-muted">│</span>                              <span class="ac-muted">│</span>
+                    <span class="ac-purple">└── ● g7h8</span> ─── <span class="ac-purple">● i9j0</span> ───────┘
+                                              <span class="ac-yellow">● k1l2</span>  "Merge feat"
+                                              <span class="ac-blue">◆ HEAD → main</span>`,
+ name:{en:'git merge',es:'git merge',nl:'git merge'},
+ learnTitle:{en:"Let's learn: git merge",es:"Aprendamos: git merge",nl:"Laten we leren: git merge"},
+ intro:{en:"When your feature is ready, merge it back into main. Watch the branches combine!",es:"Cuando tu función esté lista, fusiónala de nuevo en main. ¡Mira cómo se combinan las ramas!",nl:"Als je feature klaar is, voeg je hem terug samen met main. Bekijk hoe de branches samenkomen!"},
+ concepts:[
+   {icon:'🤝',title:{en:'Be on the target branch first',es:'Estar primero en la rama destino',nl:'Eerst op de doelbranch zijn'},desc:{en:"To merge feature into main: first checkout main, THEN run git merge feature. Direction matters!",es:"Para fusionar feature en main: primero ve a main, LUEGO ejecuta git merge feature. ¡La dirección importa!",nl:"Om feature samen te voegen in main: eerst checkout main, DAN git merge feature uitvoeren. Richting telt!"}},
+   {icon:'⚠️',title:{en:'Merge conflicts',es:'Conflictos de fusión',nl:'Samenvoegconflicten'},desc:{en:"If both branches changed the same line, Git will pause and ask you which version to keep. Edit the file, then git add + git commit to finish.",es:"Si ambas ramas cambiaron la misma línea, Git se pausará y te pedirá cuál versión mantener. Edita el archivo, luego git add + git commit para terminar.",nl:"Als beide branches dezelfde regel wijzigden, pauzeert Git en vraagt welke versie te bewaren. Bewerk het bestand, dan git add + git commit om te voltooien."}},
+ ],
+ analogy:{en:"Like combining two friends' project contributions into one final version — taking the best parts of both!",es:"¡Como combinar las contribuciones de dos amigos en una versión final — tomando lo mejor de ambos!",nl:"Als de bijdragen van twee vrienden aan een project samenvoegen tot één eindversie — het beste van beiden nemen!"},
+ cmdPreview:'git merge new-feature',termPath:'~/project (main)',
+ accept:['git merge'],
+ successMsg:"Updating a4f2c1b..f3a9d2e\nFast-forward\n app.js | 12 ++++++++\n 1 file changed, 12 insertions(+)",
+ story:{en:'🎉 Merged! The feature is now part of main.',es:'🎉 ¡Fusionado! La función ahora es parte de main.',nl:'🎉 Samengevoegd! De feature maakt nu deel uit van main.'},
+ missionTitle:{en:'Type: git merge new-feature',es:'Escribe: git merge new-feature',nl:'Typ: git merge new-feature'},
+ missionPrompt:{en:"Merge your feature branch into main!",es:"¡Fusiona tu rama de función en main!",nl:"Voeg je feature-branch samen met main!"},
+ done:false},
+
+{ch:3,ce:'🌿',icon:'📊',asciiHtml:null,
+ name:{en:'git log --graph',es:'git log --graph',nl:'git log --graph'},
+ learnTitle:{en:"Let's learn: git log --graph",es:"Aprendamos: git log --graph",nl:"Laten we leren: git log --graph"},
+ intro:{en:"See your branch history as a visual graph right in the terminal! Beautiful and useful.",es:"¡Ve tu historial de ramas como un gráfico visual directamente en el terminal! Hermoso y útil.",nl:"Bekijk je branchgeschiedenis als een visuele grafiek direct in de terminal! Mooi en nuttig."},
+ concepts:[
+   {icon:'🌲',title:{en:'git log --graph --decorate',es:'git log --graph --decorate',nl:'git log --graph --decorate'},desc:{en:"Shows a text-art tree of commits with branch and tag labels. Add --oneline for a compact view.",es:"Muestra un árbol de commits con etiquetas de ramas y tags. Añade --oneline para una vista compacta.",nl:"Toont een tekstkunstboom van commits met branch- en tag-labels. Voeg --oneline toe voor een compacte weergave."}},
+   {icon:'🔍',title:{en:'--all flag',es:'Bandera --all',nl:'--all vlag'},desc:{en:"Add --all to show ALL branches, not just the current one. Lets you see the full picture!",es:"Añade --all para mostrar TODAS las ramas, no solo la actual. ¡Te permite ver el panorama completo!",nl:"Voeg --all toe om ALLE branches te tonen, niet alleen de huidige. Laat je het hele plaatje zien!"}},
+ ],
+ analogy:{en:"Like a family tree — you can see who came from who, where branches split, and where they rejoined!",es:"¡Como un árbol genealógico — puedes ver quién vino de quién, dónde se dividieron las ramas y dónde se reunieron!",nl:"Als een stamboom — je kunt zien wie van wie afkwam, waar branches splitsten en waar ze weer samenkwamen!"},
+ cmdPreview:'git log --graph --decorate --oneline',termPath:'~/project',
+ accept:['git log --graph','git log'],
+ successMsg:'* a4f2c1b (HEAD -> main) merge new-feature\n|\\  \n| * f3a9d2e (new-feature) add animation\n| * d2b1c0f add layout\n|/  \n* c1a0b9e initial commit',
+ story:{en:'🎉 Beautiful! You can see your branch history!',es:'🎉 ¡Hermoso! ¡Puedes ver tu historial de ramas!',nl:'🎉 Prachtig! Je kunt je branchgeschiedenis zien!'},
+ missionTitle:{en:'Type: git log --graph --decorate --oneline',es:'Escribe: git log --graph --decorate --oneline',nl:'Typ: git log --graph --decorate --oneline'},
+ missionPrompt:{en:"See your commits as a visual graph!",es:"¡Ve tus commits como un gráfico visual!",nl:"Bekijk je commits als een visuele grafiek!"},
+ done:false},
+
+// ─── CHAPTER 4: GITHUB / REMOTE ──────────────────────────────────────────────
+{ch:4,ce:'🌐',icon:'🌐',asciiHtml:`<span class="ac-yellow">  Local ↔ Remote — how sync works</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-orange">Your Computer (local):</span>
+  <span class="ac-green">  ● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span>  <span class="ac-blue">main</span>
+        <span class="ac-yellow">↓ git push</span>        <span class="ac-yellow">↑ git pull</span>
+  <span class="ac-green">GitHub (remote):</span>
+  <span class="ac-green">  ● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span>  <span class="ac-blue">origin/main</span>
+
+  <span class="ac-muted">  fetch = download without merging</span>
+  <span class="ac-muted">  pull  = fetch + merge in one step</span>
+  <span class="ac-muted">  push  = upload your commits to GitHub</span>`,
+ name:{en:'git remote',es:'git remote',nl:'git remote'},
+ learnTitle:{en:"Let's learn: git remote",es:"Aprendamos: git remote",nl:"Laten we leren: git remote"},
+ intro:{en:"Connect your project to GitHub! A remote is just a copy of your repo on the internet.",es:"¡Conecta tu proyecto a GitHub! Un remoto es solo una copia de tu repositorio en internet.",nl:"Verbind je project met GitHub! Een remote is gewoon een kopie van je repo op internet."},
+ concepts:[
+   {icon:'🔗',title:{en:'git remote add origin URL',es:'git remote add origin URL',nl:'git remote add origin URL'},desc:{en:"Links your local repo to a GitHub repo. 'origin' is the nickname — you can use any name but origin is the standard.",es:"Vincula tu repositorio local a un repositorio de GitHub. 'origin' es el apodo — puedes usar cualquier nombre pero origin es el estándar.",nl:"Koppelt je lokale repo aan een GitHub-repo. 'origin' is de bijnaam — je kunt elke naam gebruiken maar origin is de standaard."}},
+   {icon:'👁️',title:{en:'git remote -v',es:'git remote -v',nl:'git remote -v'},desc:{en:"Lists all your remotes and their URLs. Use it to check you're connected to the right place!",es:"Lista todos tus remotos y sus URLs. ¡Úsalo para verificar que estás conectado al lugar correcto!",nl:"Toont alle remotes en hun URL's. Gebruik het om te controleren of je verbonden bent met de juiste plek!"}},
+ ],
+ analogy:{en:"Like saving your homework to Google Drive — the local copy is on your desk, the remote copy is in the cloud!",es:"¡Como guardar tus deberes en Google Drive — la copia local está en tu escritorio, la copia remota está en la nube!",nl:"Als je huiswerk opslaan op Google Drive — de lokale kopie staat op je bureau, de remote kopie staat in de cloud!"},
+ cmdPreview:'git remote add origin https://github.com/you/project.git',termPath:'~/project',
+ accept:['git remote'],
+ successMsg:"Remote 'origin' set to: https://github.com/you/project.git\nVerify: git remote -v",
+ story:{en:'🎉 Connected to GitHub!',es:'🎉 ¡Conectado a GitHub!',nl:'🎉 Verbonden met GitHub!'},
+ missionTitle:{en:'Type: git remote add origin https://github.com/you/project.git',es:'Escribe: git remote add origin ...',nl:'Typ: git remote add origin ...'},
+ missionPrompt:{en:"Connect your project to GitHub!",es:"¡Conecta tu proyecto a GitHub!",nl:"Verbind je project met GitHub!"},
+ done:false},
+
+{ch:4,ce:'🌐',icon:'📤',asciiHtml:null,
+ name:{en:'git fetch & push & pull',es:'git fetch & push & pull',nl:'git fetch & push & pull'},
+ learnTitle:{en:"fetch · push · pull",es:"fetch · push · pull",nl:"fetch · push · pull"},
+ intro:{en:"Three commands to sync with GitHub. Fetch checks for changes, push uploads, pull downloads + merges!",es:"Tres comandos para sincronizarse con GitHub. Fetch verifica cambios, push sube, pull descarga + fusiona.",nl:"Drie commando's om te synchroniseren met GitHub. Fetch controleert wijzigingen, push uploadt, pull downloadt + samenvoegen!"},
+ concepts:[
+   {icon:'🔍',title:{en:'git fetch origin master',es:'git fetch origin master',nl:'git fetch origin master'},desc:{en:"Downloads new commits from GitHub but does NOT merge them. Let's you inspect first before merging.",es:"Descarga nuevos commits de GitHub pero NO los fusiona. Te permite inspeccionar antes de fusionar.",nl:"Downloadt nieuwe commits van GitHub maar voegt ze NIET samen. Laat je eerst inspecteren voor het samenvoegen."}},
+   {icon:'📤',title:{en:'git push origin master',es:'git push origin master',nl:'git push origin master'},desc:{en:"Uploads your local commits to GitHub. Everyone can then see your latest work!",es:"Sube tus commits locales a GitHub. ¡Todos pueden ver tu trabajo más reciente!",nl:"Uploadt je lokale commits naar GitHub. Iedereen kan dan je laatste werk zien!"}},
+   {icon:'📥',title:{en:'git pull origin master',es:'git pull origin master',nl:'git pull origin master'},desc:{en:"Fetch + merge in one step. Downloads new commits AND merges them into your current branch.",es:"Fetch + merge en un solo paso. Descarga nuevos commits Y los fusiona en tu rama actual.",nl:"Fetch + merge in één stap. Downloadt nieuwe commits EN voegt ze samen in je huidige branch."}},
+ ],
+ analogy:{en:"Fetch = peeking at your mailbox. Pull = collecting all letters and reading them. Push = posting your own letters!",es:"Fetch = echar un vistazo al buzón. Pull = recoger todas las cartas y leerlas. Push = enviar tus propias cartas.",nl:"Fetch = een blik in je brievenbus werpen. Pull = alle brieven ophalen en lezen. Push = je eigen brieven versturen!"},
+ cmdPreview:'git pull origin master',termPath:'~/project',
+ accept:['git fetch','git push','git pull'],
+ successMsg:"remote: Enumerating objects: 3, done.\nUpdating a4f2c1b..d8e1a3f\nFast-forward\n README.md | 5 +++++\n 1 file changed",
+ story:{en:"🎉 Synced with GitHub! You're up to date.",es:'🎉 ¡Sincronizado con GitHub! Estás al día.',nl:'🎉 Gesynchroniseerd met GitHub! Je bent bijgewerkt.'},
+ missionTitle:{en:'Type: git pull origin master',es:'Escribe: git pull origin master',nl:'Typ: git pull origin master'},
+ missionPrompt:{en:"Pull the latest code from GitHub!",es:"¡Descarga el último código de GitHub!",nl:"Haal de nieuwste code op van GitHub!"},
+ done:false},
+
+{ch:4,ce:'🌐',icon:'🌍',asciiHtml:null,
+ name:{en:'git branch -a',es:'git branch -a',nl:'git branch -a'},
+ learnTitle:{en:"Let's learn: git branch -a",es:"Aprendamos: git branch -a",nl:"Laten we leren: git branch -a"},
+ intro:{en:"See ALL branches — local and remote — in one view. Very handy when working with a team!",es:"Ve TODAS las ramas — locales y remotas — en una vista. ¡Muy útil cuando trabajas en equipo!",nl:"Bekijk ALLE branches — lokaal en remote — in één overzicht. Erg handig bij teamwork!"},
+ concepts:[
+   {icon:'📋',title:{en:'Local vs remote branches',es:'Ramas locales vs remotas',nl:'Lokale vs remote branches'},desc:{en:"Local branches live on your computer. Remote branches (shown in red/remotes/origin/) live on GitHub.",es:"Las ramas locales viven en tu computadora. Las ramas remotas (mostradas en remotes/origin/) viven en GitHub.",nl:"Lokale branches leven op je computer. Remote branches (weergegeven in remotes/origin/) leven op GitHub."}},
+   {icon:'🤝',title:{en:'Tracking branches',es:'Ramas de seguimiento',nl:'Tracking branches'},desc:{en:"Your local main 'tracks' origin/main. When you pull, it updates your local to match the remote.",es:"Tu main local 'rastrea' origin/main. Cuando haces pull, actualiza tu local para que coincida con el remoto.",nl:"Je lokale main 'volgt' origin/main. Als je pull doet, wordt je lokale branch bijgewerkt naar de remote."}},
+ ],
+ analogy:{en:"Like seeing all floors of a building — your floor (local) and all the other floors (remote) listed together.",es:"Como ver todos los pisos de un edificio — tu piso (local) y todos los demás pisos (remoto) listados juntos.",nl:"Als alle verdiepingen van een gebouw zien — jouw verdieping (lokaal) en alle andere verdiepingen (remote) samen vermeld."},
+ cmdPreview:'git branch -a',termPath:'~/project',
+ accept:['git branch -a','git branch'],
+ successMsg:'* main\n  new-feature\n  remotes/origin/main\n  remotes/origin/new-feature',
+ story:{en:'🎉 You can see all branches — local and remote!',es:'🎉 ¡Puedes ver todas las ramas — locales y remotas!',nl:'🎉 Je kunt alle branches zien — lokaal en remote!'},
+ missionTitle:{en:'Type: git branch -a',es:'Escribe: git branch -a',nl:'Typ: git branch -a'},
+ missionPrompt:{en:"List all local and remote branches!",es:"¡Lista todas las ramas locales y remotas!",nl:"Toon alle lokale en remote branches!"},
+ done:false},
+
+{ch:4,ce:'🌐',icon:'🍴',asciiHtml:null,
+ name:{en:'Fork concept',es:'Concepto de Fork',nl:'Fork concept'},
+ learnTitle:{en:"Let's learn: Forking",es:"Aprendamos: Forking",nl:"Laten we leren: Forken"},
+ intro:{en:"A fork is your own copy of someone else's GitHub repository. Edit it freely, then propose your changes back!",es:"Un fork es tu propia copia del repositorio de GitHub de otra persona. ¡Edítalo libremente y luego propón tus cambios!",nl:"Een fork is je eigen kopie van iemand anders' GitHub-repository. Bewerk het vrij, stel dan je wijzigingen voor!"},
+ concepts:[
+   {icon:'🍴',title:{en:'Fork vs Clone',es:'Fork vs Clone',nl:'Fork vs Clone'},desc:{en:"Fork = copy on GitHub (your account). Clone = download to your computer. You usually fork THEN clone to work on it.",es:"Fork = copia en GitHub (tu cuenta). Clone = descargar a tu computadora. Normalmente haces fork Y LUEGO clone para trabajar en él.",nl:"Fork = kopie op GitHub (jouw account). Clone = downloaden naar je computer. Je forkt normaal eerst DAN kloon je om eraan te werken."}},
+   {icon:'📬',title:{en:'Pull Request',es:'Pull Request',nl:'Pull Request'},desc:{en:"After pushing changes to your fork, you open a Pull Request to ask the original repo to accept your changes. This is how open source works!",es:"Después de subir cambios a tu fork, abres un Pull Request para pedirle al repositorio original que acepte tus cambios. ¡Así funciona el código abierto!",nl:"Na het pushen van wijzigingen naar je fork open je een Pull Request om het originele repo te vragen je wijzigingen te accepteren. Zo werkt open source!"}},
+ ],
+ analogy:{en:"Like photocopying a library book, making notes in YOUR copy, then suggesting those notes go into the original!",es:"¡Como fotocopiar un libro de biblioteca, hacer notas en TU copia y luego sugerir que esas notas se incluyan en el original!",nl:"Als een bibliotheekboek fotokopiëren, notities maken in JOUW kopie, en dan suggereren dat die notities in het origineel komen!"},
+ cmdPreview:'git clone https://github.com/YOUR-USERNAME/forked-project.git',termPath:'~/',
+ accept:['git clone','git fork','fork'],
+ successMsg:"Forking is done on GitHub.com — then clone your fork:\ngit clone https://github.com/YOU/forked-project.git\nCloning into 'forked-project'... done.",
+ story:{en:'🎉 You understand forking! The open source way.',es:'🎉 ¡Entiendes el forking! La forma del código abierto.',nl:'🎉 Je begrijpt forken! De open source manier.'},
+ missionTitle:{en:'Type: git clone https://github.com/YOUR-USERNAME/forked-project.git',es:'Escribe: git clone https://github.com/YOUR-USERNAME/forked-project.git',nl:'Typ: git clone https://github.com/YOUR-USERNAME/forked-project.git'},
+ missionPrompt:{en:"Clone your forked project!",es:"¡Clona tu proyecto forked!",nl:"Kloon je geforkte project!"},
+ done:false},
+
+// ─── CHAPTER 5: ADVANCED ─────────────────────────────────────────────────────
+{ch:5,ce:'⚡',icon:'♻️',asciiHtml:`<span class="ac-yellow">  git rebase — clean linear history</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-yellow">Before rebase:</span>
+  <span class="ac-green">main:</span>  <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span>
+                         <span class="ac-muted">│</span>
+  <span class="ac-purple">feat:</span>        <span class="ac-purple">● D</span> ─── <span class="ac-purple">● E</span>  <span class="ac-muted">(started from B)</span>
+
+  <span class="ac-yellow">After: git rebase master</span>
+  <span class="ac-green">main:</span>  <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span>
+                                   <span class="ac-muted">│</span>
+  <span class="ac-purple">feat:</span>                    <span class="ac-purple">● D'</span> ─── <span class="ac-purple">● E'</span>  <span class="ac-blue">◆ HEAD</span>
+  <span class="ac-muted">  Commits replayed on top of C — clean & linear!</span>`,
+ name:{en:'git rebase',es:'git rebase',nl:'git rebase'},
+ learnTitle:{en:"Let's learn: git rebase",es:"Aprendamos: git rebase",nl:"Laten we leren: git rebase"},
+ intro:{en:"Rebase replays your commits on top of another branch — creating a clean, linear history. Watch the animation!",es:"Rebase reproduce tus commits encima de otra rama — creando un historial limpio y lineal. ¡Mira la animación!",nl:"Rebase herhaalt je commits bovenop een andere branch — waardoor een schone, lineaire geschiedenis ontstaat. Bekijk de animatie!"},
+ concepts:[
+   {icon:'♻️',title:{en:'git rebase master',es:'git rebase master',nl:'git rebase master'},desc:{en:"From your feature branch, rebase master to replay your commits on top of the latest main commits. Cleaner than merge!",es:"Desde tu rama de función, haz rebase master para reproducir tus commits encima de los últimos commits de main. ¡Más limpio que merge!",nl:"Vanuit je feature-branch, rebase master om je commits te herspelen bovenop de laatste main-commits. Schoner dan merge!"}},
+   {icon:'🎬',title:{en:'git rebase -i HEAD~3',es:'git rebase -i HEAD~3',nl:'git rebase -i HEAD~3'},desc:{en:"Interactive rebase! Opens an editor showing last 3 commits. Use 'pick' to keep, 'squash' to combine into one, 'drop' to delete.",es:"¡Rebase interactivo! Abre un editor mostrando los últimos 3 commits. Usa 'pick' para conservar, 'squash' para combinar en uno, 'drop' para eliminar.",nl:"Interactieve rebase! Opent een editor met de laatste 3 commits. Gebruik 'pick' om te bewaren, 'squash' om te combineren, 'drop' om te verwijderen."}},
+ ],
+ analogy:{en:"Like rewriting your essay draft on top of a new template — same content, cleaner layout, and it starts from the latest version!",es:"¡Como reescribir el borrador de tu ensayo sobre una nueva plantilla — mismo contenido, diseño más limpio y comienza desde la última versión!",nl:"Als je essayconcept herschrijven op een nieuwe sjabloon — zelfde inhoud, schonere opmaak, en het begint vanuit de laatste versie!"},
+ cmdPreview:'git rebase master',termPath:'~/project (feature)',
+ accept:['git rebase'],
+ successMsg:"Successfully rebased and updated refs/heads/feature.\nFirst, rewinding head to replay your work on top of it...\nApplying: add new animation\nApplying: fix bug",
+ story:{en:'🎉 Clean linear history! Rebase complete.',es:'🎉 ¡Historial lineal limpio! Rebase completo.',nl:'🎉 Schone lineaire geschiedenis! Rebase voltooid.'},
+ missionTitle:{en:'Type: git rebase master',es:'Escribe: git rebase master',nl:'Typ: git rebase master'},
+ missionPrompt:{en:"Rebase your feature onto master!",es:"¡Haz rebase de tu función sobre master!",nl:"Rebase je feature bovenop master!"},
+ done:false},
+
+{ch:5,ce:'⚡',icon:'🍒',asciiHtml:`<span class="ac-yellow">  git cherry-pick — grab one specific commit</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-green">main:</span>   <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span>
+  <span class="ac-purple">hotfix:</span> <span class="ac-purple">● C</span> ─── <span class="ac-yellow">● D</span> ─── <span class="ac-purple">● E</span>
+                  <span class="ac-yellow">▲</span>
+  <span class="ac-yellow">  "fix critical bug" ← we want only this one!</span>
+
+  <span class="ac-yellow">After: git cherry-pick D</span>
+  <span class="ac-green">main:</span>   <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-yellow">● D'</span>  <span class="ac-blue">◆ HEAD</span>
+  <span class="ac-purple">hotfix:</span> <span class="ac-purple">● C</span> ─── <span class="ac-yellow">● D</span> ─── <span class="ac-purple">● E</span>  <span class="ac-muted">(untouched)</span>
+  <span class="ac-muted">  D' is a copy of D applied only to main.</span>`,
+ name:{en:'git cherry-pick',es:'git cherry-pick',nl:'git cherry-pick'},
+ learnTitle:{en:"Let's learn: git cherry-pick",es:"Aprendamos: git cherry-pick",nl:"Laten we leren: git cherry-pick"},
+ intro:{en:"Pick ONE specific commit from another branch and apply it to your current branch. Like choosing just one cherry!",es:"¡Elige UN commit específico de otra rama y aplícalo a tu rama actual. ¡Como elegir solo una cereza!",nl:"Kies ÉÉN specifieke commit van een andere branch en pas hem toe op je huidige branch. Als slechts één kers kiezen!"},
+ concepts:[
+   {icon:'🍒',title:{en:'git cherry-pick abc1234',es:'git cherry-pick abc1234',nl:'git cherry-pick abc1234'},desc:{en:"Copies a specific commit (by its hash) and applies it to your current branch. The original commit stays where it is.",es:"Copia un commit específico (por su hash) y lo aplica a tu rama actual. El commit original permanece donde está.",nl:"Kopieert een specifieke commit (op basis van zijn hash) en past hem toe op je huidige branch. De originele commit blijft waar hij is."}},
+   {icon:'🔍',title:{en:'Find the hash first',es:'Encuentra el hash primero',nl:'Zoek eerst de hash'},desc:{en:"Use git log --oneline to find the 7-character hash of the commit you want. Then cherry-pick it!",es:"Usa git log --oneline para encontrar el hash de 7 caracteres del commit que quieres. ¡Luego haz cherry-pick!",nl:"Gebruik git log --oneline om de 7-karakter hash te vinden van de commit die je wilt. Dan cherry-pick hem!"}},
+ ],
+ analogy:{en:"Like copying just ONE recipe from your friend's cookbook into yours — not the whole book, just that one great recipe!",es:"¡Como copiar solo UNA receta del libro de recetas de tu amigo al tuyo — no todo el libro, solo esa gran receta!",nl:"Als slechts ÉÉN recept uit je vriends kookboek kopiëren naar het jouwe — niet het hele boek, alleen dat ene geweldige recept!"},
+ cmdPreview:'git cherry-pick abc1234',termPath:'~/project (main)',
+ accept:['git cherry-pick'],
+ successMsg:"[main f4a2b1c] fix critical bug\n Date: today\n 1 file changed, 3 insertions(+), 1 deletion(-)",
+ story:{en:"🎉 Cherry-picked! That commit is now on your branch.",es:'🎉 ¡Cherry-pick hecho! Ese commit ahora está en tu rama.',nl:'🎉 Cherry-gepickt! Die commit staat nu op je branch.'},
+ missionTitle:{en:'Type: git cherry-pick abc1234',es:'Escribe: git cherry-pick abc1234',nl:'Typ: git cherry-pick abc1234'},
+ missionPrompt:{en:"Cherry-pick a specific commit!",es:"¡Haz cherry-pick de un commit específico!",nl:"Cherry-pick een specifieke commit!"},
+ done:false},
+
+{ch:5,ce:'⚡',icon:'↩️',asciiHtml:`<span class="ac-yellow">  Three ways to undo — compared</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-blue">git revert HEAD</span>  <span class="ac-muted">— SAFE, adds new commit</span>
+  <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span> ─── <span class="ac-blue">● C'</span>  <span class="ac-muted">"revert C" — history kept!</span>
+
+  <span class="ac-blue">git reset --soft HEAD~</span>  <span class="ac-muted">— undo commit, keep changes staged</span>
+  <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span>  <span class="ac-muted">(C removed, but changes still in staging)</span>
+
+  <span class="ac-red">git reset --hard HEAD~</span>  <span class="ac-muted">— ⚠ DANGEROUS</span>
+  <span class="ac-green">● A</span> ─── <span class="ac-green">● B</span>  <span class="ac-red">(C removed AND changes deleted!)</span>
+  <span class="ac-muted">  → Use git reflog to recover if needed.</span>`,
+ name:{en:'git revert & reset',es:'git revert & reset',nl:'git revert & reset'},
+ learnTitle:{en:"revert · reset --soft · reset --hard",es:"revert · reset --soft · reset --hard",nl:"revert · reset --soft · reset --hard"},
+ intro:{en:"Three ways to undo in Git — each has different powers. Watch the animation to see what changes!",es:"Tres formas de deshacer en Git — cada una tiene diferentes poderes. ¡Mira la animación para ver qué cambia!",nl:"Drie manieren om ongedaan te maken in Git — elk heeft andere krachten. Bekijk de animatie om te zien wat verandert!"},
+ concepts:[
+   {icon:'↩️',title:{en:'git revert HEAD',es:'git revert HEAD',nl:'git revert HEAD'},desc:{en:"Creates a NEW commit that undoes the last one. Safe — history is preserved! Great for shared branches.",es:"Crea un NUEVO commit que deshace el último. ¡Seguro — el historial se preserva! Ideal para ramas compartidas.",nl:"Maakt een NIEUWE commit die de laatste ongedaan maakt. Veilig — geschiedenis blijft bewaard! Geweldig voor gedeelde branches."}},
+   {icon:'🔵',title:{en:'git reset --soft HEAD~',es:'git reset --soft HEAD~',nl:'git reset --soft HEAD~'},desc:{en:"Removes the last commit but KEEPS your changes in the Staging Area. You can fix and recommit.",es:"Elimina el último commit pero MANTIENE tus cambios en el Área de preparación. Puedes corregir y volver a hacer commit.",nl:"Verwijdert de laatste commit maar BEHOUDT je wijzigingen in het Staginggebied. Je kunt het herstellen en opnieuw committen."}},
+   {icon:'🔴',title:{en:'git reset --hard HEAD~',es:'git reset --hard HEAD~',nl:'git reset --hard HEAD~'},desc:{en:"Removes the last commit AND discards all changes. Dangerous! But recoverable with git reflog.",es:"Elimina el último commit Y descarta todos los cambios. ¡Peligroso! Pero recuperable con git reflog.",nl:"Verwijdert de laatste commit EN verwijdert alle wijzigingen. Gevaarlijk! Maar herstelbaar met git reflog."}},
+ ],
+ analogy:{en:"revert = writing a correction in pen (safe). reset --soft = erasing pencil but keeping your notes. reset --hard = tearing the page out!",es:"revert = escribir una corrección en tinta (seguro). reset --soft = borrar lápiz pero conservar tus notas. reset --hard = ¡arrancar la página!",nl:"revert = een correctie in pen schrijven (veilig). reset --soft = potlood gummen maar notities bewaren. reset --hard = de pagina uitscheuren!"},
+ cmdPreview:'git reset --soft HEAD~',termPath:'~/project',
+ accept:['git revert','git reset'],
+ successMsg:"HEAD is now at d3e2f1a add star field\nYour changes are in the staging area.",
+ story:{en:'🎉 Undo mastered! You know three ways now.',es:'🎉 ¡Deshacer dominado! Ahora conoces tres formas.',nl:'🎉 Ongedaan maken beheerst! Je kent nu drie manieren.'},
+ missionTitle:{en:'Type: git reset --soft HEAD~',es:'Escribe: git reset --soft HEAD~',nl:'Typ: git reset --soft HEAD~'},
+ missionPrompt:{en:"Undo last commit but keep changes staged!",es:"¡Deshaz el último commit pero mantén los cambios preparados!",nl:"Maak de laatste commit ongedaan maar bewaar wijzigingen klaargezet!"},
+ done:false},
+
+// ─── CHAPTER 6: STASH & REFLOG ───────────────────────────────────────────────
+{ch:6,ce:'🎒',icon:'🎒',asciiHtml:`<span class="ac-yellow">  git stash — save work-in-progress</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-orange">Before stash:</span>
+  <span class="ac-orange">  Working Area: 📝 app.js 🔴  📝 style.css 🔴</span>
+  <span class="ac-muted">  Stash: (empty)</span>
+
+  <span class="ac-yellow">git stash  ↓</span>
+
+  <span class="ac-green">After stash:</span>
+  <span class="ac-green">  Working Area: 📝 app.js 🟢  📝 style.css 🟢  (clean!)</span>
+  <span class="ac-blue">  Stash: stash@{0}: WIP on main — saved!</span>
+
+  <span class="ac-yellow">git stash pop  ↓</span>
+
+  <span class="ac-orange">  Working Area: 📝 app.js 🔴  back to work!</span>
+  <span class="ac-muted">  Stash: (empty again)</span>`,
+ name:{en:'git stash',es:'git stash',nl:'git stash'},
+ learnTitle:{en:"Let's learn: git stash",es:"Aprendamos: git stash",nl:"Laten we leren: git stash"},
+ intro:{en:"Need to switch tasks but not ready to commit? Stash saves your work-in-progress temporarily!",es:"¿Necesitas cambiar de tarea pero no estás listo para hacer commit? ¡Stash guarda tu trabajo en progreso temporalmente!",nl:"Wil je van taak wisselen maar nog niet committen? Stash slaat je werk-in-uitvoering tijdelijk op!"},
+ concepts:[
+   {icon:'🎒',title:{en:'git stash',es:'git stash',nl:'git stash'},desc:{en:"Saves all uncommitted changes to a temporary stack and cleans your working area. Like putting things in a bag!",es:"Guarda todos los cambios sin confirmar en una pila temporal y limpia tu área de trabajo. ¡Como poner cosas en una mochila!",nl:"Slaat alle niet-gecommitte wijzigingen op in een tijdelijke stapel en maakt je werkgebied schoon. Als spullen in een tas stoppen!"}},
+   {icon:'📤',title:{en:'git stash pop',es:'git stash pop',nl:'git stash pop'},desc:{en:"Brings back the most recent stash and removes it from the stack. Like emptying your bag back onto the desk.",es:"Devuelve el stash más reciente y lo elimina de la pila. Como vaciar tu mochila de vuelta en el escritorio.",nl:"Brengt de meest recente stash terug en verwijdert hem uit de stapel. Als je tas terug op het bureau leegmaken."}},
+   {icon:'📋',title:{en:'git stash list',es:'git stash list',nl:'git stash list'},desc:{en:"Lists all your stashes. You can have multiple! git stash show stash@{1} shows details of a specific one.",es:"Lista todos tus stashes. ¡Puedes tener varios! git stash show stash@{1} muestra detalles de uno específico.",nl:"Toont alle stashes. Je kunt er meerdere hebben! git stash show stash@{1} toont details van een specifieke."}},
+ ],
+ analogy:{en:"Like a save-point in a video game mid-level — stash pauses where you are so you can do something else and come back!",es:"¡Como un punto de guardado en un videojuego en medio del nivel — stash pausa dónde estás para que puedas hacer otra cosa y volver!",nl:"Als een opslagpunt in een videospel halverwege een level — stash pauzeert waar je bent zodat je iets anders kunt doen en terugkomen!"},
+ cmdPreview:'git stash',termPath:'~/project',
+ accept:['git stash'],
+ successMsg:"Saved working directory and index state\nWIP on main: a4f2c1b fix rocket engine\nHEAD is now at a4f2c1b fix rocket engine",
+ story:{en:'🎉 Work stashed! Your area is clean.',es:'🎉 ¡Trabajo guardado en stash! Tu área está limpia.',nl:'🎉 Werk opgeslagen in stash! Je gebied is schoon.'},
+ missionTitle:{en:'Type: git stash',es:'Escribe: git stash',nl:'Typ: git stash'},
+ missionPrompt:{en:"Stash your work-in-progress!",es:"¡Guarda tu trabajo en progreso!",nl:"Sla je werk-in-uitvoering op in stash!"},
+ done:false},
+
+{ch:6,ce:'🎒',icon:'📚',asciiHtml:null,
+ name:{en:'stash pop & show',es:'stash pop & show',nl:'stash pop & show'},
+ learnTitle:{en:"git stash pop · list · show",es:"git stash pop · list · show",nl:"git stash pop · list · show"},
+ intro:{en:"Managing multiple stashes — list them, inspect them, and pop a specific one back!",es:"Gestionar múltiples stashes — listarlos, inspeccionarlos y recuperar uno específico.",nl:"Meerdere stashes beheren — ze tonen, inspecteren en een specifieke terughalen!"},
+ concepts:[
+   {icon:'📋',title:{en:'git stash list',es:'git stash list',nl:'git stash list'},desc:{en:"Shows all saved stashes: stash@{0} (newest), stash@{1} (older), etc.",es:"Muestra todos los stashes guardados: stash@{0} (más reciente), stash@{1} (más antiguo), etc.",nl:"Toont alle opgeslagen stashes: stash@{0} (nieuwste), stash@{1} (ouder), etc."}},
+   {icon:'🔍',title:{en:'git stash show stash@{1}',es:'git stash show stash@{1}',nl:'git stash show stash@{1}'},desc:{en:"Shows a summary of what files changed in that stash — before you pop it.",es:"Muestra un resumen de qué archivos cambiaron en ese stash — antes de recuperarlo.",nl:"Toont een samenvatting van welke bestanden zijn gewijzigd in die stash — voor je hem terughaalt."}},
+   {icon:'📤',title:{en:'git stash pop stash@{1}',es:'git stash pop stash@{1}',nl:'git stash pop stash@{1}'},desc:{en:"Pops a specific stash by index — not just the most recent. Gives you control over which one to apply.",es:"Recupera un stash específico por índice — no solo el más reciente. Te da control sobre cuál aplicar.",nl:"Haalt een specifieke stash terug op index — niet alleen de meest recente. Geeft je controle over welke je toepast."}},
+ ],
+ analogy:{en:"Like having multiple drawers to store different work-in-progress items — you can check what's in each drawer before pulling it out!",es:"¡Como tener múltiples cajones para guardar diferentes trabajos en progreso — puedes revisar qué hay en cada cajón antes de sacarlo!",nl:"Als meerdere lades hebben om verschillende werk-in-uitvoering items op te slaan — je kunt controleren wat er in elke la zit voor je hem uittrekt!"},
+ cmdPreview:'git stash pop stash@{1}',termPath:'~/project',
+ accept:['git stash pop','git stash list','git stash show','git stash'],
+ successMsg:"On branch main\nChanges not staged for commit:\n  modified: app.js\n  modified: style.css\nDropped stash@{1}",
+ story:{en:'🎉 Stash mastered! Multiple stashes, no problem.',es:'🎉 ¡Stash dominado! Múltiples stashes, sin problema.',nl:'🎉 Stash beheerst! Meerdere stashes, geen probleem.'},
+ missionTitle:{en:'Type: git stash pop stash@{1}',es:'Escribe: git stash pop stash@{1}',nl:'Typ: git stash pop stash@{1}'},
+ missionPrompt:{en:"Pop a specific stash by index!",es:"¡Recupera un stash específico por índice!",nl:"Haal een specifieke stash terug op index!"},
+ done:false},
+
+{ch:6,ce:'🎒',icon:'🕰️',asciiHtml:`<span class="ac-yellow">  git reflog — Git's black box recorder</span>
+<span class="ac-muted">  ──────────────────────────────────────────────</span>
+
+  <span class="ac-green">HEAD@{0}</span> <span class="ac-blue">g7h8i9</span>  reset: moving to HEAD~      <span class="ac-muted">← now</span>
+  <span class="ac-green">HEAD@{1}</span> <span class="ac-blue">f5e4d3</span>  commit: "add animation"
+  <span class="ac-green">HEAD@{2}</span> <span class="ac-blue">a1b2c3</span>  commit: "initial commit"
+
+  <span class="ac-yellow">Even after --hard reset, Git remembers every move!</span>
+
+  <span class="ac-muted">To recover a lost commit:</span>
+  <span class="ac-blue">git reset --hard HEAD@{1}</span>
+  <span class="ac-green">  ● A</span> ─── <span class="ac-green">● B</span> ─── <span class="ac-green">● C</span>  <span class="ac-green">← fully restored!</span>`,
+ name:{en:'git reflog',es:'git reflog',nl:'git reflog'},
+ learnTitle:{en:"Let's learn: git reflog",es:"Aprendamos: git reflog",nl:"Laten we leren: git reflog"},
+ intro:{en:"The ultimate safety net! reflog records every move HEAD makes — even after hard resets. Nothing is truly lost!",es:"¡La red de seguridad definitiva! reflog registra cada movimiento de HEAD — incluso después de hard resets. ¡Nada se pierde realmente!",nl:"Het ultieme veiligheidsnet! reflog registreert elke beweging die HEAD maakt — zelfs na hard resets. Niets gaat echt verloren!"},
+ concepts:[
+   {icon:'📖',title:{en:'git reflog',es:'git reflog',nl:'git reflog'},desc:{en:"Shows every position HEAD has been at — with timestamps. Like a detailed diary of all your Git moves.",es:"Muestra cada posición en la que ha estado HEAD — con marcas de tiempo. Como un diario detallado de todos tus movimientos de Git.",nl:"Toont elke positie waar HEAD is geweest — met tijdstempels. Als een gedetailleerd dagboek van al je Git-bewegingen."}},
+   {icon:'🧲',title:{en:'Recovering lost commits',es:'Recuperar commits perdidos',nl:'Verloren commits herstellen'},desc:{en:"After a bad reset, use git reflog to find the hash of your lost commit, then git reset --hard HASH to get it back!",es:"Después de un reset malo, usa git reflog para encontrar el hash de tu commit perdido, ¡luego git reset --hard HASH para recuperarlo!",nl:"Na een slechte reset, gebruik git reflog om de hash van je verloren commit te vinden, dan git reset --hard HASH om het terug te krijgen!"}},
+ ],
+ analogy:{en:"Like Git's black box recorder — even if the plane crashes (hard reset), the recorder still has all the data from the flight!",es:"¡Como la caja negra de Git — incluso si el avión se estrella (hard reset), la grabadora todavía tiene todos los datos del vuelo!",nl:"Als Git's zwarte doos recorder — zelfs als het vliegtuig neerstort (hard reset), heeft de recorder nog steeds alle vluchtgegevens!"},
+ cmdPreview:'git reflog',termPath:'~/project',
+ accept:['git reflog'],
+ successMsg:"a4f2c1b (HEAD -> main) HEAD@{0}: reset: moving to HEAD~\nf3a9d2e HEAD@{1}: commit: add animation\nd2b1c0f HEAD@{2}: commit: add layout\nc1a0b9e HEAD@{3}: commit: initial",
+ story:{en:"🎉 You found the safety net! Nothing is lost with reflog.",es:'🎉 ¡Encontraste la red de seguridad! Nada se pierde con reflog.',nl:'🎉 Je hebt het veiligheidsnet gevonden! Niets gaat verloren met reflog.'},
+ missionTitle:{en:'Type: git reflog',es:'Escribe: git reflog',nl:'Typ: git reflog'},
+ missionPrompt:{en:"See Git's complete movement history!",es:"¡Ve el historial completo de movimientos de Git!",nl:"Bekijk Git's volledige bewegingsgeschiedenis!"},
+ done:false},
+];
+
+// ═══════════════════════════════════════════════════════ STATE
+let selChar=null,selTheme=null,selLang=null,kidName='';
+let lang='en',cur=0,stars=0;
+
+function tx2(o){if(!o)return '';if(typeof o==='string')return o;return o[lang]||o.en||Object.values(o)[0];}
+function t(k){return i18n[lang][k];}
+
+// ═══════════════════════════════════════════════════════ SETUP
+function buildSetup(){
+  applySetupLabels();
+  const cg=document.getElementById('char-grid');
+  CHARS.forEach(c=>{
+    const d=document.createElement('div');d.className='char-card';d.id='ch-'+c.id;
+    d.innerHTML=`<div class="char-emoji">${c.e}</div><div class="char-name">${c.name.en}</div><div class="char-role">${c.role.en}</div>`;
+    d.onclick=()=>{sfxClick();pickChar(c.id);};cg.appendChild(d);
+  });
+  const tg=document.getElementById('theme-grid');
+  THEMES.forEach(th=>{
+    const d=document.createElement('div');d.className='theme-card';d.id='th-'+th.id;d.style.background=th.bg;
+    d.innerHTML=`<div class="theme-dot" style="background:${th.dot}"></div><div class="theme-name" style="color:#fff">${th.name.en}</div>`;
+    d.onclick=()=>{sfxClick();pickTheme(th.id);};tg.appendChild(d);
+  });
+  const ni=document.getElementById('name-input');
+  ni.placeholder=t('namePH');
+  ni.addEventListener('input',()=>{kidName=ni.value.trim();checkReady();});
+}
+function applySetupLabels(){
+  const l=i18n[lang||'en'];
+  document.getElementById('setup-sub').textContent=l.setupSub;
+  document.getElementById('lbl-s1').textContent=l.s1;document.getElementById('lbl-s2').textContent=l.s2;
+  document.getElementById('lbl-s3').textContent=l.s3;document.getElementById('lbl-s4').textContent=l.s4;
+  document.getElementById('name-input').placeholder=l.namePH;
+}
+function pickChar(id){selChar=id;document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('sel'));document.getElementById('ch-'+id).classList.add('sel');checkReady();}
+function pickTheme(id){selTheme=id;document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));document.getElementById('th-'+id).classList.add('sel');document.getElementById('gw').className='gw theme-'+id;checkReady();}
+function pickLang(l){selLang=l;lang=l;document.querySelectorAll('.lang-btn-big').forEach(b=>b.classList.remove('sel'));document.getElementById('lbig-'+l).classList.add('sel');applySetupLabels();checkReady();}
+function checkReady(){const btn=document.getElementById('start-btn');const ok=selChar&&selTheme&&selLang&&kidName.length>0;btn.disabled=!ok;btn.textContent=ok?t('startOn')(kidName):t('startOff');}
+function startGame(){sfxLevel();document.getElementById('setup-screen').classList.add('gone');document.getElementById('game-screen').classList.remove('gone');document.getElementById('avatar-chip').textContent=CHARS.find(c=>c.id===selChar).e+' '+kidName;updateLBtns();loadLevel(0);}
+
+// ═══════════════════════════════════════════════════════ LANG
+function switchLang(l){sfxClick();lang=l;updateLBtns();applyLang();}
+function updateLBtns(){['en','es','nl'].forEach(c=>document.getElementById('lb-'+c).classList.toggle('active',c===lang));}
+function applyLang(){
+  const lv=LEVELS[cur];
+  document.getElementById('l-title').textContent=tx2(lv.learnTitle);
+  document.getElementById('l-intro').textContent=tx2(lv.intro);
+  document.getElementById('analogy-lbl').textContent=t('analogy');
+  document.getElementById('analogy-txt').textContent=tx2(lv.analogy);
+  document.getElementById('cmd-lbl').textContent=t('cmdLbl');
+  document.getElementById('cmd-preview').textContent=lv.cmdPreview;
+  document.getElementById('try-btn').textContent=t('tryBtn');
+  document.getElementById('m-title').textContent=tx2(lv.missionTitle);
+  document.getElementById('m-prompt').textContent=tx2(lv.missionPrompt);
+  document.getElementById('rbtn').textContent=t('run');
+  document.getElementById('bkbtn').textContent=t('back');
+  document.getElementById('tin').placeholder=lv.cmdPreview;
+  document.getElementById('stars-pill').textContent=t('stars')(stars);
+  document.getElementById('avatar-chip').textContent=CHARS.find(c=>c.id===selChar).e+' '+kidName;
+  document.querySelectorAll('.c-title').forEach((el,i)=>{if(lv.concepts[i])el.textContent=tx2(lv.concepts[i].title);});
+  document.querySelectorAll('.c-desc').forEach((el,i)=>{if(lv.concepts[i])el.textContent=tx2(lv.concepts[i].desc);});
+  updateChBadge(lv);renderLevels();
+}
+
+// ═══════════════════════════════════════════════════════ LOAD LEVEL
+const CH_LABELS={
+  1:{en:'Chapter 1: The 3 Git Areas',es:'Capítulo 1: Las 3 Zonas de Git',nl:'Hoofdstuk 1: De 3 Git-gebieden'},
+  2:{en:'Chapter 2: History & Log',es:'Capítulo 2: Historial y Log',nl:'Hoofdstuk 2: Geschiedenis & Log'},
+  3:{en:'Chapter 3: Branching',es:'Capítulo 3: Ramas',nl:'Hoofdstuk 3: Vertakken'},
+  4:{en:'Chapter 4: GitHub & Remote',es:'Capítulo 4: GitHub y Remoto',nl:'Hoofdstuk 4: GitHub & Remote'},
+  5:{en:'Chapter 5: Advanced Moves',es:'Capítulo 5: Movimientos Avanzados',nl:'Hoofdstuk 5: Geavanceerde Moves'},
+  6:{en:'Chapter 6: Stash & Reflog',es:'Capítulo 6: Stash y Reflog',nl:'Hoofdstuk 6: Stash & Reflog'},
+};
+
+function updateChBadge(lv){
+  const label=CH_LABELS[lv.ch]?.[lang]||CH_LABELS[lv.ch]?.en||'';
+  document.getElementById('chapter-badge').textContent=lv.ce+' '+label;
+}
+
+function loadLevel(i){
+  cur=i;
+  const lv=LEVELS[i];
+  const ch=CHARS.find(c=>c.id===selChar);
+  document.getElementById('mascot').textContent=ch.e;
+  document.getElementById('mm').textContent=ch.e;
+  document.getElementById('l-title').textContent=tx2(lv.learnTitle);
+  document.getElementById('l-intro').textContent=tx2(lv.intro);
+  document.getElementById('term-path').textContent=lv.termPath||'~/project';
+
+  // ASCII viz (static)
+  const ac=document.getElementById('ascii-container');ac.innerHTML='';
+  if(lv.asciiHtml){
+    const div=document.createElement('div');div.className='ascii-viz';
+    div.innerHTML=lv.asciiHtml;
+    ac.appendChild(div);
+  }
+
+  const cw=document.getElementById('cards-wrap');cw.innerHTML='';
+  lv.concepts.forEach(c=>{
+    const d=document.createElement('div');d.className='c-card';
+    d.innerHTML=`<div class="c-icon">${c.icon}</div><div><div class="c-title">${tx2(c.title)}</div><div class="c-desc">${tx2(c.desc)}</div></div>`;
+    cw.appendChild(d);
+  });
+
+  const an=document.getElementById('analogy'),cb=document.getElementById('cmd-box'),tb=document.getElementById('try-btn');
+  an.classList.remove('show');cb.classList.remove('show');tb.classList.remove('show');
+  document.getElementById('analogy-lbl').textContent=t('analogy');
+  document.getElementById('analogy-txt').textContent=tx2(lv.analogy);
+  document.getElementById('cmd-lbl').textContent=t('cmdLbl');
+  document.getElementById('cmd-preview').textContent=lv.cmdPreview;
+  document.getElementById('try-btn').textContent=t('tryBtn');
+  document.getElementById('m-title').textContent=tx2(lv.missionTitle);
+  document.getElementById('m-prompt').textContent=tx2(lv.missionPrompt);
+  document.getElementById('rbtn').textContent=t('run');
+  document.getElementById('bkbtn').textContent=t('back');
+  document.getElementById('tin').value='';
+  document.getElementById('tin').placeholder=lv.cmdPreview;
+  document.getElementById('fb').className='fb';
+  document.getElementById('tout').innerHTML=`<span class="tl ti">${t('ready')(kidName)}</span>`;
+  updateChBadge(lv);showLearn();revealCards();renderLevels();updateProg();updateLBtns();
+}
+
+function revealCards(){
+  const cards=document.querySelectorAll('.c-card');
+  cards.forEach((c,i)=>setTimeout(()=>{c.classList.add('show');sfxReveal();},180+i*260));
+  const base=180+cards.length*260;
+  setTimeout(()=>document.getElementById('analogy').classList.add('show'),base+80);
+  setTimeout(()=>document.getElementById('cmd-box').classList.add('show'),base+300);
+  setTimeout(()=>document.getElementById('try-btn').classList.add('show'),base+520);
+}
+function showLearn(){document.getElementById('learn-panel').style.display='';document.getElementById('learn-panel').classList.add('vis');document.getElementById('term-panel').classList.remove('vis');document.getElementById('term-panel').style.display='none';}
+function showTerm(){document.getElementById('learn-panel').style.display='none';document.getElementById('learn-panel').classList.remove('vis');document.getElementById('term-panel').style.display='';document.getElementById('term-panel').classList.add('vis');}
+function goTerminal(){sfxClick();showTerm();}
+function goLearn(){sfxClick();showLearn();}
+
+// ═══════════════════════════════════════════════════════ TERMINAL
+function printLine(cls,text){
+  const out=document.getElementById('tout');
+  text.split('\n').forEach(line=>{const s=document.createElement('span');s.className='tl '+cls;s.textContent=line;out.appendChild(s);});
+  out.scrollTop=out.scrollHeight;
+}
+
+function runCmd(){
+  const inp=document.getElementById('tin');const val=inp.value.trim();if(!val)return;
+  inp.value='';
+  const fb=document.getElementById('fb');const lv=LEVELS[cur];
+  printLine('tu','$ '+val);
+  const matched=lv.accept.some(a=>val.toLowerCase().startsWith(a.toLowerCase()));
+  if(matched){
+    printLine('ts',lv.successMsg);fb.className='fb ok';fb.textContent=tx2(lv.story);
+    if(!lv.done){lv.done=true;stars++;updateProg();}
+    const isFinal=cur===LEVELS.length-1;
+    isFinal?sfxWin():sfxOk();celebrate(isFinal);
+    setTimeout(()=>{if(!isFinal)loadLevel(cur+1);else fb.textContent=t('win')(kidName);},2500);
+  }else if(val.startsWith('git ')||val==='fork'){
+    sfxErr();printLine('te',t('wrongGit'));fb.className='fb err';fb.textContent=t('wrongGitFb');shake();
+  }else{
+    sfxErr();printLine('te',t('notFound')(val));fb.className='fb err';fb.textContent=t('notFoundFb');shake();
+  }
+}
+document.getElementById('rbtn').onclick=runCmd;
+document.getElementById('tin').addEventListener('keydown',e=>{if(e.key==='Enter')runCmd();});
+
+// ═══════════════════════════════════════════════════════ LEVELS STRIP
+function renderLevels(){
+  const sec=document.getElementById('levels-section');sec.innerHTML='';
+  const chs=[...new Set(LEVELS.map(l=>l.ch))];
+  chs.forEach(ch=>{
+    const chl=LEVELS.filter(l=>l.ch===ch);
+    const lbl=document.createElement('div');lbl.className='ch-label';
+    lbl.textContent=chl[0].ce+' '+(CH_LABELS[ch]?.[lang]||CH_LABELS[ch]?.en||'');
+    sec.appendChild(lbl);
+    const row=document.createElement('div');row.className='levels-row';
+    chl.forEach(lv=>{
+      const gi=LEVELS.indexOf(lv);const locked=gi>cur&&!lv.done;
+      const d=document.createElement('div');
+      d.className='lv-card'+(gi===cur?' cur':'')+(lv.done?' done':'')+(locked?' lock':'');
+      d.innerHTML=`<div class="lv-icon">${lv.icon}</div><div class="lv-name">${tx2(lv.name)}</div><div class="lv-cmd">${lv.cmdPreview.split(' ').slice(0,3).join(' ')}</div><div class="lv-st">${lv.done?t('done'):gi===cur?t('inProg'):t('locked')}</div>`;
+      if(!locked)d.onclick=()=>{sfxClick();loadLevel(gi);};
+      row.appendChild(d);
+    });
+    sec.appendChild(row);
+  });
+}
+function updateProg(){
+  const done=LEVELS.filter(l=>l.done).length;
+  document.getElementById('prog').style.width=(done/LEVELS.length*100)+'%';
+  document.getElementById('stars-pill').textContent=t('stars')(stars);
+}
+
+// ═══════════════════════════════════════════════════════ CELEBRATE
+function celebrate(isFinal){
+  const cel=document.getElementById('cel');cel.innerHTML='';cel.classList.add('active');
+  const n=isFinal?90:55;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    const color=CONF[Math.floor(Math.random()*CONF.length)];
+    const sz=6+Math.random()*13,delay=Math.random()*0.8,dur=1+Math.random()*1.2;
+    p.style.cssText=`left:${Math.random()*100}%;top:0;width:${sz}px;height:${sz}px;background:${color};animation-duration:${dur}s;animation-delay:${delay}s;font-size:${sz}px;border-radius:${Math.random()>0.5?'50%':'3px'}`;
+    cel.appendChild(p);
+  }
+  ['⭐','🌟','✨','💫','🎉','🎊'].forEach((em,i)=>{
+    const s=document.createElement('div');s.className='star-burst';
+    s.textContent=em;s.style.cssText=`left:${8+Math.random()*84}%;top:${8+Math.random()*70}%;animation-delay:${Math.random()*0.6}s;font-size:${28+Math.random()*22}px;`;
+    cel.appendChild(s);
+  });
+  if(isFinal){
+    const bw=document.createElement('div');bw.className='big-win';
+    const bt=document.createElement('div');bt.className='big-win-text';
+    bt.innerHTML=`${CHARS.find(c=>c.id===selChar).e}<br>${t('win')(kidName)}<br>🌟🌟🌟🌟🌟`;
+    bw.appendChild(bt);cel.appendChild(bw);
+  }
+  setTimeout(()=>{cel.classList.remove('active');cel.innerHTML='';},isFinal?5000:2800);
+}
+function shake(){const gw=document.getElementById('gw');gw.style.animation='none';setTimeout(()=>{gw.style.animation='shake 0.4s ease';setTimeout(()=>gw.style.animation='',500);},10);}
+
+// ═══════════════════════════════════════════════════════ INIT
+buildSetup();
+</script>
+</body>
+</html>

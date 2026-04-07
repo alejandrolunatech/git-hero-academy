@@ -1,6 +1,6 @@
 # 🚀 Git Hero Academy
 
-🌐 **[Play it live!](https://alejandrolunatech.github.io/git-hero-academy/)**
+🎮 **[Play it live → https://alejandrolunatech.github.io/git-hero-academy/](https://alejandrolunatech.github.io/git-hero-academy/)**
 
 A fun, multilingual, interactive game that teaches kids Git from the ground up — from the basics of the three working areas all the way to rebasing, cherry-picking, stashing, and recovering lost work with reflog.
 
